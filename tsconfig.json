@@ -1,0 +1,39 @@
+{
+  "include": ["env.d.ts", "**/*.ts", "**/*.tsx", ".graphqlrc.ts"],
+  "exclude": [
+    "node_modules",
+    "build",
+    "public",
+    "extensions",
+    ".shopify",
+    ".vscode"
+  ],
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "strict": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+    "removeComments": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ES2022",
+    "baseUrl": ".",
+    "types": ["node", "@shopify/app-bridge-types", "vite/client"],
+    "paths": {
+      "app/*": ["./app/*"]
+    }
+  }
+}
