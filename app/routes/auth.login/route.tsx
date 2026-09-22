@@ -1,9 +1,4 @@
 import {
-  type ActionFunctionArgs,
-  type LoaderFunctionArgs,
-} from '@remix-run/node';
-import { Form, useActionData, useLoaderData } from '@remix-run/react';
-import {
   Button,
   Card,
   FormLayout,
@@ -16,6 +11,13 @@ import polarisStyles from '@shopify/polaris/build/esm/styles.css?url';
 import polarisTranslations from '@shopify/polaris/locales/en.json';
 import { login } from 'app/shopify.server';
 import { useState } from 'react';
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
+} from 'react-router';
 import { loginErrorMessage } from './error.server';
 
 export const links = () => [{ rel: 'stylesheet', href: polarisStyles }];

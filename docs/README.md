@@ -1,6 +1,6 @@
 # Shopify Remix Starter
 
-It is built with Remix, TypeScript, and Vite, and uses Drizzle ORM for database management.
+It is built with React Router, TypeScript, and Vite, and uses Drizzle ORM for database management.
 
 ## Table of Contents
 

@@ -1,10 +1,10 @@
-import '@shopify/shopify-app-remix/adapters/node';
+import '@shopify/shopify-app-react-router/adapters/node';
 import {
   ApiVersion,
   AppDistribution,
   LogSeverity,
   shopifyApp,
-} from '@shopify/shopify-app-remix/server';
+} from '@shopify/shopify-app-react-router/server';
 import { DrizzleSessionStoragePostgres } from '@shopify/shopify-app-session-storage-drizzle';
 import { db } from './db.server';
 import { sessionTable } from './db/schema';
@@ -41,10 +41,6 @@ const shopify = shopifyApp({
     async afterAuth({ session }) {
       await shopify.registerWebhooks({ session });
     },
-  },
-  future: {
-    unstable_newEmbeddedAuthStrategy: true,
-    removeRest: true,
   },
   ...(process.env.SHOP_CUSTOM_DOMAIN
     ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }

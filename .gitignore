@@ -2,6 +2,7 @@ node_modules
 .DS_Store
 
 /.cache
+/.react-router
 /build
 /app/build
 /public/build/
@@ -26,3 +27,4 @@ node_modules
 
 # Generated types
 /app/types/*
+.scratch/

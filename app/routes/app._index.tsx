@@ -1,5 +1,4 @@
-import { type LoaderFunctionArgs } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { useLoaderData, type LoaderFunctionArgs } from 'react-router';
 import {
   Badge,
   BlockStack,

@@ -1,7 +1,7 @@
 import {
   LoginErrorType,
   type LoginError,
-} from '@shopify/shopify-app-remix/server';
+} from '@shopify/shopify-app-react-router/server';
 
 interface LoginErrorMessage {
   shop?: string;

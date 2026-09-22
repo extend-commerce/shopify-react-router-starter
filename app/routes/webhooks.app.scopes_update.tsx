@@ -1,9 +1,9 @@
-import { type ActionFunctionArgs } from '@remix-run/node';
 import { db } from 'app/db.server';
 import { sessionTable } from 'app/db/schema';
 import logger from 'app/lib/logger';
 import { authenticate } from 'app/shopify.server';
 import { eq } from 'drizzle-orm';
+import { type ActionFunctionArgs } from 'react-router';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { payload, session, topic, shop } = await authenticate.webhook(request);
