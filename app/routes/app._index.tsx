@@ -49,7 +49,7 @@ interface ProductCardProps {
     } | null;
     priceRangeV2: {
       minVariantPrice: {
-        amount?: number;
+        amount?: string;
         currencyCode: string;
       };
     };
@@ -65,7 +65,7 @@ function ProductCard({ product }: ProductCardProps) {
   const price = Intl.NumberFormat(undefined, {
     style: 'currency',
     currency: product.priceRangeV2.minVariantPrice.currencyCode,
-  }).format(product.priceRangeV2.minVariantPrice.amount ?? 0);
+  }).format(Number(product.priceRangeV2.minVariantPrice.amount ?? 0));
 
   return (
     <Layout.Section key={product.id} variant="oneThird">

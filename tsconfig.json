@@ -30,7 +30,6 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "target": "ES2022",
-    "baseUrl": ".",
     "types": ["node", "@shopify/app-bridge-types", "vite/client"],
     "paths": {
       "app/*": ["./app/*"]
