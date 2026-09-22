@@ -1,6 +1,5 @@
 import '@shopify/shopify-app-react-router/adapters/node';
 import {
-  ApiVersion,
   AppDistribution,
   LogSeverity,
   shopifyApp,
@@ -9,8 +8,9 @@ import { DrizzleSessionStoragePostgres } from '@shopify/shopify-app-session-stor
 import { db } from './db.server';
 import { sessionTable } from './db/schema';
 import logger from './lib/logger';
+import { apiVersion } from './lib/shopify-api-version';
 
-export const apiVersion = ApiVersion.October25;
+export { apiVersion };
 const isProduction = process.env.NODE_ENV === 'production';
 const logLevel = isProduction ? LogSeverity.Info : LogSeverity.Debug;
 
