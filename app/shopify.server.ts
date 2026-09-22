@@ -9,7 +9,6 @@ import { DrizzleSessionStoragePostgres } from '@shopify/shopify-app-session-stor
 import { db } from './db.server';
 import { sessionTable } from './db/schema';
 import logger from './lib/logger';
-import { identify } from './lib/mantle/identify';
 
 export const apiVersion = ApiVersion.October25;
 const isProduction = process.env.NODE_ENV === 'production';
@@ -39,9 +38,8 @@ const shopify = shopifyApp({
     },
   },
   hooks: {
-    async afterAuth({ session, admin }) {
+    async afterAuth({ session }) {
       await shopify.registerWebhooks({ session });
-      await identify(admin, session);
     },
   },
   future: {

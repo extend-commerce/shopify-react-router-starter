@@ -9,5 +9,4 @@ export const sessionTable = pgTable('session', {
   expires: timestamp('expires', { mode: 'date' }),
   accessToken: text('accessToken'),
   userId: bigint('userId', { mode: 'number' }),
-  mantleApiToken: text('mantleApiToken'),
 });

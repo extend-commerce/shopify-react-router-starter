@@ -30,9 +30,6 @@
   },
   "dependencies": {
     "@graphql-codegen/cli": "^5.0.7",
-    "@heymantle/client": "^1.1.59",
-    "@heymantle/polaris": "^13.0.1",
-    "@heymantle/react": "^0.0.62",
     "@remix-run/dev": "^2.16.1",
     "@remix-run/fs-routes": "^2.16.1",
     "@remix-run/node": "^2.16.1",
