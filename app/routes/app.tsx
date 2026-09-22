@@ -1,13 +1,7 @@
 import { NavMenu } from '@shopify/app-bridge-react';
-import {
-  AppProvider as PolarisAppProvider,
-  type AppProviderProps,
-} from '@shopify/polaris';
-import polarisStyles from '@shopify/polaris/build/esm/styles.css?url';
-import polarisTranslations from '@shopify/polaris/locales/en.json';
+import { AppProvider } from '@shopify/shopify-app-react-router/react';
 import { boundary } from '@shopify/shopify-app-react-router/server';
 import { authenticate } from 'app/shopify.server';
-import { type ComponentProps } from 'react';
 import {
   Link,
   Outlet,
@@ -16,19 +10,6 @@ import {
   type HeadersFunction,
   type LoaderFunctionArgs,
 } from 'react-router';
-
-const APP_BRIDGE_URL = 'https://cdn.shopify.com/shopifycloud/app-bridge.js';
-
-type PolarisLinkProps = ComponentProps<
-  NonNullable<AppProviderProps['linkComponent']>
->;
-
-// Adapts React Router's `Link` to the shape Polaris expects for its internal link rendering.
-function PolarisLink({ url, ...rest }: PolarisLinkProps) {
-  return <Link to={url} {...rest} />;
-}
-
-export const links = () => [{ rel: 'stylesheet', href: polarisStyles }];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
@@ -42,20 +23,19 @@ export default function App() {
   const { apiKey } = useLoaderData<typeof loader>();
 
   return (
-    <>
-      <script src={APP_BRIDGE_URL} data-api-key={apiKey} />
-      <PolarisAppProvider
-        i18n={polarisTranslations}
-        linkComponent={PolarisLink}
-      >
-        <NavMenu>
-          <Link to="/app" rel="home">
-            Home
-          </Link>
-        </NavMenu>
-        <Outlet />
-      </PolarisAppProvider>
-    </>
+    <AppProvider apiKey={apiKey}>
+      {/*
+        Kept as App Bridge's NavMenu (not the Polaris Web Components s-app-nav/s-link
+        pair) since NavMenu doesn't depend on @shopify/polaris, and @shopify/polaris-types
+        doesn't yet type an s-link rel="home" override.
+      */}
+      <NavMenu>
+        <Link to="/app" rel="home">
+          Home
+        </Link>
+      </NavMenu>
+      <Outlet />
+    </AppProvider>
   );
 }
 

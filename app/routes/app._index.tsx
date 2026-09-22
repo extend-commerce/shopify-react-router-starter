@@ -1,15 +1,4 @@
 import { useLoaderData, type LoaderFunctionArgs } from 'react-router';
-import {
-  Badge,
-  BlockStack,
-  Box,
-  Card,
-  Image,
-  InlineStack,
-  Layout,
-  Page,
-  Text,
-} from '@shopify/polaris';
 import { getProducts } from 'app/server/products.server';
 import { authenticate } from 'app/shopify.server';
 
@@ -24,13 +13,18 @@ export default function Index() {
   const { products } = useLoaderData<typeof loader>();
 
   return (
-    <Page title="Shopify Remix Starter">
-      <Layout>
+    <s-page heading="Shopify Remix Starter">
+      <s-grid
+        gridTemplateColumns="repeat(auto-fill, minmax(260px, 1fr))"
+        gap="base"
+      >
         {products.map(product => (
-          <ProductCard product={product} key={product.id} />
+          <s-grid-item key={product.id}>
+            <ProductCard product={product} />
+          </s-grid-item>
         ))}
-      </Layout>
-    </Page>
+      </s-grid>
+    </s-page>
   );
 }
 
@@ -67,31 +61,27 @@ function ProductCard({ product }: ProductCardProps) {
   }).format(Number(product.priceRangeV2.minVariantPrice.amount ?? 0));
 
   return (
-    <Layout.Section key={product.id} variant="oneThird">
-      <Card padding="0">
-        <BlockStack gap="300">
-          <Image
-            source={imageUrl}
-            alt={imageAltText}
-            width="100%"
-            height={200}
-            style={{ objectFit: 'cover' }}
-          />
-          <Box paddingInline="300" paddingBlockEnd="300">
-            <BlockStack gap="200">
-              <Text variant="headingSm" as="h3">
-                {product.title}
-              </Text>
-              <InlineStack gap="200" align="space-between">
-                <Text variant="bodyMd" fontWeight="semibold" as="span">
-                  {price}
-                </Text>
-                <Badge tone="success">Available</Badge>
-              </InlineStack>
-            </BlockStack>
-          </Box>
-        </BlockStack>
-      </Card>
-    </Layout.Section>
+    <s-section padding="none">
+      <s-image
+        src={imageUrl}
+        alt={imageAltText}
+        aspectRatio="3/2"
+        objectFit="cover"
+        loading="lazy"
+      />
+      <s-box padding="base">
+        <s-stack direction="block" gap="small">
+          <s-heading>{product.title}</s-heading>
+          <s-stack
+            direction="inline"
+            gap="small"
+            justifyContent="space-between"
+          >
+            <s-text type="strong">{price}</s-text>
+            <s-badge tone="success">Available</s-badge>
+          </s-stack>
+        </s-stack>
+      </s-box>
+    </s-section>
   );
 }

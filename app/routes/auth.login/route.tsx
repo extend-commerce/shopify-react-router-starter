@@ -1,14 +1,3 @@
-import {
-  Button,
-  Card,
-  FormLayout,
-  Page,
-  AppProvider as PolarisAppProvider,
-  Text,
-  TextField,
-} from '@shopify/polaris';
-import polarisStyles from '@shopify/polaris/build/esm/styles.css?url';
-import polarisTranslations from '@shopify/polaris/locales/en.json';
 import { login } from 'app/shopify.server';
 import { useState } from 'react';
 import {
@@ -20,12 +9,12 @@ import {
 } from 'react-router';
 import { loginErrorMessage } from './error.server';
 
-export const links = () => [{ rel: 'stylesheet', href: polarisStyles }];
+const POLARIS_SCRIPT_URL = 'https://cdn.shopify.com/shopifycloud/polaris.js';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const errors = loginErrorMessage(await login(request));
 
-  return { errors, polarisTranslations };
+  return { errors };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -41,29 +30,27 @@ export default function Auth() {
   const { errors } = actionData || loaderData;
 
   return (
-    <PolarisAppProvider i18n={loaderData.polarisTranslations}>
-      <Page>
-        <Card>
+    <>
+      <script src={POLARIS_SCRIPT_URL} />
+      <s-page inlineSize="small">
+        <s-section>
           <Form method="post">
-            <FormLayout>
-              <Text variant="headingMd" as="h2">
-                Log in
-              </Text>
-              <TextField
-                type="text"
+            <s-stack direction="block" gap="base">
+              <s-heading>Log in</s-heading>
+              <s-text-field
                 name="shop"
                 label="Shop domain"
-                helpText="example.myshopify.com"
+                details="example.myshopify.com"
                 value={shop}
-                onChange={setShop}
-                autoComplete="on"
+                onChange={event => setShop(event.currentTarget.value)}
+                autocomplete="on"
                 error={errors.shop}
               />
-              <Button submit>Log in</Button>
-            </FormLayout>
+              <s-button type="submit">Log in</s-button>
+            </s-stack>
           </Form>
-        </Card>
-      </Page>
-    </PolarisAppProvider>
+        </s-section>
+      </s-page>
+    </>
   );
 }
