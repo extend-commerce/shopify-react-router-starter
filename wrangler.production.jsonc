@@ -1,0 +1,42 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Production deploy target — same shape as wrangler.staging.jsonc (see its comments for the
+  // naming convention and why `main`/`assets.directory` point at build output rather than
+  // workers/app.ts source). Keep the two files' bindings/vars structurally in sync; only the
+  // values (name, database, URL, log level) should differ.
+  "name": "shopify-remix-starter-production",
+  "compatibility_date": "2026-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "dist/shopify_remix_starter/index.js",
+  "assets": {
+    "directory": "dist/client",
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      // Create with `wrangler d1 create shopify-remix-starter-production` and paste the returned
+      // `database_id` below. A separate database from staging's — never share one across
+      // environments.
+      "database_name": "shopify-remix-starter-production",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "./drizzle",
+    },
+  ],
+  // SHOPIFY_API_SECRET (signs/verifies webhook HMACs and OAuth callbacks — a real secret) is
+  // deliberately NOT a `vars` entry below: set it once with `wrangler secret put
+  // SHOPIFY_API_SECRET --config wrangler.production.jsonc`. See wrangler.staging.jsonc's comment
+  // for why SHOPIFY_API_KEY, by contrast, is safe as a plain var.
+  "vars": {
+    "SHOPIFY_API_KEY": "42dc486dc8033b6a1b398632d0f3fea3",
+    "SCOPES": "read_products",
+    // Replace once production has a real Workers route/custom domain (see the commented `routes`
+    // block below) — must match whatever URL Shopify's app config points at for production.
+    "SHOPIFY_APP_URL": "https://shopify-remix-starter-production.<your-subdomain>.workers.dev",
+    "NODE_ENV": "production",
+  },
+  // No custom route/domain has been decided yet (shopify.app.toml's application_url is still the
+  // "https://example.com" scaffold default) — production deploys to its *.workers.dev subdomain
+  // by default. Once a real domain exists, uncomment and fill in (and drop SHOPIFY_APP_URL's
+  // workers.dev placeholder above to match):
+  // "routes": [{ "pattern": "example.com", "custom_domain": true }],
+}

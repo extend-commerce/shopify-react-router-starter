@@ -1,0 +1,69 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Staging deploy target. Naming convention (recorded here since the ticket asked to pick one and
+  // record it): one wrangler file per environment (`wrangler.<env>.jsonc`), each fully
+  // self-contained rather than using wrangler's single-file `[env.staging]` sections — so
+  // `wrangler deploy --config wrangler.staging.jsonc` / `wrangler dev --config
+  // wrangler.staging.jsonc` never need an extra `--env` flag, and there's no risk of a bare
+  // `wrangler deploy` accidentally targeting the wrong environment because a default `env` block
+  // was picked up.
+  //
+  // `main` and `assets.directory` point at build output, not source: `pnpm run build` (via
+  // vite.config.ts's `buildCloudflareWorkerEnvironment` plugin) is what actually produces
+  // `dist/shopify_remix_starter/index.js` — a real bundled Worker script with no unresolved
+  // virtual modules — from workers/app.ts. `workers/app.ts` itself can't be used as `main` here:
+  // it imports `virtual:react-router/server-build`, which only exists inside a Vite build/dev
+  // server, so plain `wrangler deploy`/`wrangler dev` can't resolve it directly (confirmed by
+  // trying). Run `pnpm run build` before `deploy:staging`/`dev:staging` (the package.json scripts
+  // do this for you).
+  "name": "shopify-remix-starter-staging",
+  "compatibility_date": "2026-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "dist/shopify_remix_starter/index.js",
+  "assets": {
+    "directory": "dist/client",
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      // Create with `wrangler d1 create shopify-remix-starter-staging` and paste the returned
+      // `database_id` below — kept separate from the production database so staging data/schema
+      // changes never touch production. The placeholder id only needs to resolve for `--local`
+      // runs (miniflare never talks to the real database); it must be replaced before the first
+      // `--remote` deploy or migration.
+      "database_name": "shopify-remix-starter-staging",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "./drizzle",
+    },
+  ],
+  // Vars are plaintext and readable from the dashboard/`wrangler.jsonc` — fine for values that
+  // aren't secrets. SHOPIFY_API_KEY is Shopify's public client ID (not a secret — it's sent to
+  // the browser as part of App Bridge's embed script), safe as a plain var. SHOPIFY_API_SECRET
+  // (signs/verifies webhook HMACs and OAuth callbacks — a real secret) is deliberately NOT here:
+  // set it once per environment with `wrangler secret put SHOPIFY_API_SECRET --config
+  // wrangler.staging.jsonc`. It's stored encrypted server-side and layered over `vars` at
+  // runtime, so app/shopify.server.ts's `process.env.SHOPIFY_API_SECRET` read needs no code
+  // change to pick it up.
+  "vars": {
+    // Same value as wrangler.production.jsonc and shopify.app.toml's `client_id` on purpose: this
+    // is one Shopify app registration (one Partner Dashboard entry, one client ID) deployed to two
+    // Cloudflare infra environments, not two separate Shopify apps. If staging is ever split into
+    // its own Shopify app registration, this value — and SCOPES if they diverge — would need its
+    // own client ID here.
+    "SHOPIFY_API_KEY": "42dc486dc8033b6a1b398632d0f3fea3",
+    "SCOPES": "read_products",
+    // Replace once staging has a real Workers route/custom domain (see the commented `routes`
+    // block below) — must match whatever URL Shopify's app config points at for this environment.
+    "SHOPIFY_APP_URL": "https://shopify-remix-starter-staging.<your-subdomain>.workers.dev",
+    // Deliberately not "production": app/shopify.server.ts's `isProduction` check gates the
+    // Shopify API client's log level (Info vs Debug). Staging is a deployed-but-pre-production
+    // environment where verbose Shopify API debug logging (visible via `wrangler tail`) is more
+    // useful than in real production.
+    "NODE_ENV": "staging",
+  },
+  // No custom route/domain has been decided yet (shopify.app.toml's application_url is still the
+  // "https://example.com" scaffold default) — staging deploys to its *.workers.dev subdomain by
+  // default. Once a real domain exists, uncomment and fill in (and drop SHOPIFY_APP_URL's
+  // workers.dev placeholder above to match):
+  // "routes": [{ "pattern": "staging.example.com", "custom_domain": true }],
+}

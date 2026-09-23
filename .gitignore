@@ -8,6 +8,9 @@ node_modules
 /public/build/
 /public/_dev
 /app/public/build
+# react-router.config.ts sets buildDirectory to 'dist' (to match @cloudflare/vite-plugin's
+# expected client+worker output layout) instead of the `/build` default above.
+/dist
 
 .env
 .env.*
