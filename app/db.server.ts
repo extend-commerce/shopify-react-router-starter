@@ -1,10 +1,10 @@
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { Pool } from 'pg';
+/// <reference types="@cloudflare/workers-types" />
+import { env } from 'cloudflare:workers';
+import { drizzle } from 'drizzle-orm/d1';
 import * as schema from './db/schema';
 
-export const client = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  max: 10,
-});
+interface Env {
+  DB: D1Database;
+}
 
-export const db = drizzle({ client, schema });
+export const db = drizzle((env as unknown as Env).DB, { schema });

@@ -54,6 +54,12 @@ export default defineConfig({
   },
   build: {
     assetsInlineLimit: 0,
+    rollupOptions: {
+      // Resolved by the Workers runtime at request time; the Node/Vite build can't (and
+      // shouldn't) bundle it. Node-targeted execution of this build (`pnpm start`) will fail
+      // until the Workers-compatible build (piece 2) replaces it.
+      external: ['cloudflare:workers'],
+    },
   },
   optimizeDeps: {
     include: ['@shopify/app-bridge-react'],

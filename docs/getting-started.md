@@ -30,19 +30,12 @@ This guide will walk you through setting up and running the Shopify Remix Starte
 
 4. **Set up the database:**
 
-   The app uses a PostgreSQL database, which can be run locally using Docker.
-
-   ```bash
-   docker-compose -f docker-compose.local.yml up -d
-   ```
-
-   This will start a PostgreSQL container and expose it on port 5432.
-
-5. **Run database migrations:**
-
-   ```bash
-   pnpm run setup
-   ```
+   The app persists its session data on Cloudflare D1 (SQLite) via Drizzle. Local development runs
+   against a local D1 database through `wrangler`/miniflare rather than a standalone database
+   server — there's no Docker container or connection string to configure. Migrations live in
+   `drizzle/` (generate new ones with `pnpm run setup` after changing `app/db/schema.ts`) and are
+   applied to the local D1 database with `wrangler d1 migrations apply <DB_NAME> --local`, using
+   the D1 binding configured in the wrangler config.
 
 ## Shopify App Configuration
 

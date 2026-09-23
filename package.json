@@ -14,7 +14,7 @@
     "env": "shopify app env",
     "start": "react-router-serve ./build/server/index.js",
     "docker-start": "npm run setup && npm run start",
-    "setup": "drizzle-kit generate && drizzle-kit migrate",
+    "setup": "drizzle-kit generate",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "shopify": "shopify",
     "drizzle": "drizzle-kit",
@@ -37,10 +37,8 @@
     "@shopify/app-bridge-react": "^4.2.13",
     "@shopify/shopify-app-react-router": "^3.0.0",
     "@shopify/shopify-app-session-storage-drizzle": "^6.0.0",
-    "dotenv": "^18.0.2",
     "drizzle-orm": "^0.45.3",
     "isbot": "^5.2.2",
-    "pg": "^8.23.0",
     "posthog-js": "^1.434.7",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
@@ -52,6 +50,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260923.1",
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.3",
     "@commitlint/cz-commitlint": "^21.2.3",
@@ -65,7 +64,6 @@
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/eslint": "^9.6.1",
     "@types/node": "^26.6.2",
-    "@types/pg": "^8.23.1",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "commitizen": "^4.3.2",
@@ -83,7 +81,8 @@
     "prettier": "^3.9.8",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.70.1",
-    "vite": "^6.4.3"
+    "vite": "^6.4.3",
+    "wrangler": "^4.136.3"
   },
   "workspaces": {
     "packages": [

@@ -4,7 +4,7 @@ import {
   LogSeverity,
   shopifyApp,
 } from '@shopify/shopify-app-react-router/server';
-import { DrizzleSessionStoragePostgres } from '@shopify/shopify-app-session-storage-drizzle';
+import { DrizzleSessionStorageSQLite } from '@shopify/shopify-app-session-storage-drizzle';
 import { db } from './db.server';
 import { sessionTable } from './db/schema';
 import logger from './lib/logger';
@@ -21,7 +21,7 @@ const shopify = shopifyApp({
   scopes: process.env.SCOPES?.split(','),
   appUrl: process.env.SHOPIFY_APP_URL || '',
   authPathPrefix: '/auth',
-  sessionStorage: new DrizzleSessionStoragePostgres(db, sessionTable),
+  sessionStorage: new DrizzleSessionStorageSQLite(db, sessionTable),
   distribution: AppDistribution.AppStore,
   logger: {
     level: logLevel,

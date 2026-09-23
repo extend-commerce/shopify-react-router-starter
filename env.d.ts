@@ -3,8 +3,6 @@
 
 declare namespace NodeJS {
   interface ProcessEnv {
-    readonly DATABASE_URL?: string;
-
     // PostHog
     readonly POSTHOG_PROJECT_API_KEY?: string;
     readonly POSTHOG_API_HOST?: string;
