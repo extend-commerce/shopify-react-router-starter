@@ -4,7 +4,7 @@
     "shopify.polaris-for-vscode",
     "shopify.theme-check-vscode",
     "esbenp.prettier-vscode",
-    "dbaeumer.vscode-eslint",
+    "oxc.oxc-vscode",
     "vitest.explorer"
   ]
 }

@@ -22,7 +22,7 @@ We recommend setting up your editor to format on save.
 
 ## Linting
 
-We use [ESLint](https://eslint.org/) to identify and report on patterns found in ECMAScript/JavaScript code. Our ESLint configuration is based on the recommended rules from ESLint and TypeScript ESLint.
+We use [Oxlint](https://oxc.rs/docs/guide/usage/linter/) to identify and report on patterns found in ECMAScript/JavaScript code. The configuration covers the recommended rules from ESLint and TypeScript ESLint, plus React and import checks. Type-aware rules run through `oxlint-tsgolint`.
 
 - **Run the linter:**
 

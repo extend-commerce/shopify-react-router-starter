@@ -28,7 +28,7 @@ function log(
 
   const serialized = JSON.stringify(payload);
 
-  /* eslint-disable no-console -- this module is the app's sanctioned console sink */
+  /* oxlint-disable no-console -- this module is the app's sanctioned console sink */
   if (level === 'error') {
     console.error(serialized);
   } else if (level === 'warn') {
@@ -36,7 +36,7 @@ function log(
   } else {
     console.log(serialized);
   }
-  /* eslint-enable no-console */
+  /* oxlint-enable no-console */
 }
 
 const logger: Logger = {
