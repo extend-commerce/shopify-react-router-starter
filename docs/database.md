@@ -2,30 +2,43 @@
 
 This document provides an overview of the database used in the Shopify Remix Starter.
 
+The app persists its session data on [Cloudflare D1](https://developers.cloudflare.com/d1/)
+(SQLite) via [Drizzle ORM](https://orm.drizzle.team/). There's no standalone database server or
+connection string — the D1 database is a binding (`DB`) configured per environment in a wrangler
+config file (see [deployment.md](./deployment.md)).
+
 ## Database Schema
 
-The database schema is defined in the `app/db/schema.ts` file. We use [Drizzle ORM](https://orm.drizzle.team/) to define the schema and interact with the database.
+The database schema is defined in the `app/db/schema.ts` file.
 
 ## Migrations
 
-We use [Drizzle Kit](https://orm.drizzle.team/kit/overview) to manage database migrations. Migration files are located in the `drizzle` directory.
+We use [Drizzle Kit](https://orm.drizzle.team/kit/overview) to generate migration SQL from the
+schema, but D1 migrations themselves are applied with `wrangler`, not `drizzle-kit` (`drizzle-kit
+migrate` doesn't support D1). Migration files are located in the `drizzle` directory.
 
 ### Generating Migrations
 
-To generate a new migration, run the following command:
+After changing `app/db/schema.ts`, generate the corresponding SQL migration with:
 
 ```bash
-pnpm run drizzle:generate
+pnpm run setup
 ```
 
-This will create a new SQL file in the `drizzle` directory that contains the necessary SQL statements to update the database schema.
+This runs `drizzle-kit generate`, creating a new SQL file in the `drizzle` directory.
 
 ### Running Migrations
 
-To apply the latest migrations to your database, run the following command:
+Apply pending migrations with `wrangler d1 migrations apply`, targeting the D1 database bound by
+whichever wrangler config you're working against:
 
 ```bash
-pnpm run drizzle:migrate
-```
+# Local D1 (root wrangler.jsonc, used by `pnpm start`)
+wrangler d1 migrations apply DB --local
 
-This will run all the pending migration files and update the database schema to the latest version.
+# Staging / production — see deployment.md
+pnpm run db:migrate:staging          # local D1 against the staging config
+pnpm run db:migrate:staging:remote   # the real staging database
+pnpm run db:migrate:production       # local D1 against the production config
+pnpm run db:migrate:production:remote # the real production database
+```

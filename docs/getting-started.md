@@ -6,7 +6,6 @@ This guide will walk you through setting up and running the Shopify Remix Starte
 
 - [Node.js](https://nodejs.org/) (version specified in `.node-version` file)
 - [pnpm](https://pnpm.io/)
-- [Docker](https://www.docker.com/)
 - [Shopify CLI](https://shopify.dev/docs/apps/tools/cli)
 
 ## Installation
@@ -34,8 +33,9 @@ This guide will walk you through setting up and running the Shopify Remix Starte
    against a local D1 database through `wrangler`/miniflare rather than a standalone database
    server — there's no Docker container or connection string to configure. Migrations live in
    `drizzle/` (generate new ones with `pnpm run setup` after changing `app/db/schema.ts`) and are
-   applied to the local D1 database with `wrangler d1 migrations apply <DB_NAME> --local`, using
-   the D1 binding configured in the wrangler config.
+   applied to the local D1 database with `wrangler d1 migrations apply DB --local`, using the `DB`
+   binding configured in the root `wrangler.jsonc`. See [database.md](./database.md) for more, and
+   [deployment.md](./deployment.md) for the staging/production wrangler configs.
 
 ## Shopify App Configuration
 
