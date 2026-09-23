@@ -1,9 +1,15 @@
-import '@shopify/shopify-app-react-router/adapters/node';
 import {
   AppDistribution,
   LogSeverity,
   shopifyApp,
 } from '@shopify/shopify-app-react-router/server';
+// Runs after the Web API adapter that '@shopify/shopify-app-react-router/server' imports
+// internally, so this one's abstract-runtime registration wins. There's no Workers-specific
+// adapter package for shopify-app-react-router itself (only 'adapters/node' exists, and it's
+// Node-only in name alone — no true Node APIs); the underlying shopify-api Web API adapter it
+// pulls in is already Workers-compatible (fetch/Request/Response), so this import is purely for
+// an accurate runtime label.
+import '@shopify/shopify-api/adapters/cf-worker';
 import { DrizzleSessionStorageSQLite } from '@shopify/shopify-app-session-storage-drizzle';
 import { db } from './db.server';
 import { sessionTable } from './db/schema';

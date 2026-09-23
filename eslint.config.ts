@@ -10,10 +10,12 @@ export default tseslint.config(
   globalIgnores([
     'node_modules',
     'build',
+    'dist',
     'public/build',
     'shopify-app-remix',
     '*.yml',
     '.shopify',
+    '.react-router',
     'postcss.config.mjs',
     '.husky',
     './app/types/**/*.d.ts',
