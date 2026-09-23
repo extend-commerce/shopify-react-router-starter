@@ -1,6 +1,6 @@
 # Database
 
-This document provides an overview of the database used in the Shopify Remix Starter.
+This document provides an overview of the database used in the Shopify React Router Starter.
 
 The app persists its session data on [Cloudflare D1](https://developers.cloudflare.com/d1/)
 (SQLite) via [Drizzle ORM](https://orm.drizzle.team/). There's no standalone database server or

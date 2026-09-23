@@ -2,8 +2,8 @@
 
 client_id = "42dc486dc8033b6a1b398632d0f3fea3"
 organization_id = "129009034"
-name = "Shopify Remix Starter"
-handle = "shopify-remix-starter"
+name = "Shopify React Router Starter"
+handle = "shopify-react-router-starter"
 application_url = "https://example.com"
 embedded = true
 
@@ -11,7 +11,7 @@ embedded = true
 automatically_update_urls_on_dev = true
 
 [webhooks]
-api_version = "2025-10"
+api_version = "2026-10"
 
   [[webhooks.subscriptions]]
   topics = [ "app/uninstalled" ]

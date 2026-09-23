@@ -10,28 +10,28 @@
   //
   // `main` and `assets.directory` point at build output, not source: `pnpm run build` (via
   // vite.config.ts's `buildCloudflareWorkerEnvironment` plugin) is what actually produces
-  // `dist/shopify_remix_starter/index.js` — a real bundled Worker script with no unresolved
+  // `dist/shopify_react_router_starter/index.js` — a real bundled Worker script with no unresolved
   // virtual modules — from workers/app.ts. `workers/app.ts` itself can't be used as `main` here:
   // it imports `virtual:react-router/server-build`, which only exists inside a Vite build/dev
   // server, so plain `wrangler deploy`/`wrangler dev` can't resolve it directly (confirmed by
   // trying). Run `pnpm run build` before `deploy:staging`/`dev:staging` (the package.json scripts
   // do this for you).
-  "name": "shopify-remix-starter-staging",
+  "name": "shopify-react-router-starter-staging",
   "compatibility_date": "2026-01-01",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "dist/shopify_remix_starter/index.js",
+  "main": "dist/shopify_react_router_starter/index.js",
   "assets": {
     "directory": "dist/client",
   },
   "d1_databases": [
     {
       "binding": "DB",
-      // Create with `wrangler d1 create shopify-remix-starter-staging` and paste the returned
+      // Create with `wrangler d1 create shopify-react-router-starter-staging` and paste the returned
       // `database_id` below — kept separate from the production database so staging data/schema
       // changes never touch production. The placeholder id only needs to resolve for `--local`
       // runs (miniflare never talks to the real database); it must be replaced before the first
       // `--remote` deploy or migration.
-      "database_name": "shopify-remix-starter-staging",
+      "database_name": "shopify-react-router-starter-staging",
       "database_id": "00000000-0000-0000-0000-000000000000",
       "migrations_dir": "./drizzle",
     },
@@ -54,7 +54,7 @@
     "SCOPES": "read_products",
     // Replace once staging has a real Workers route/custom domain (see the commented `routes`
     // block below) — must match whatever URL Shopify's app config points at for this environment.
-    "SHOPIFY_APP_URL": "https://shopify-remix-starter-staging.<your-subdomain>.workers.dev",
+    "SHOPIFY_APP_URL": "https://shopify-react-router-starter-staging.<your-subdomain>.workers.dev",
     // Deliberately not "production": app/shopify.server.ts's `isProduction` check gates the
     // Shopify API client's log level (Info vs Debug). Staging is a deployed-but-pre-production
     // environment where verbose Shopify API debug logging (visible via `wrangler tail`) is more

@@ -1,6 +1,6 @@
 # Getting Started
 
-This guide will walk you through setting up and running the Shopify Remix Starter locally.
+This guide will walk you through setting up and running the Shopify React Router Starter locally.
 
 ## Prerequisites
 
@@ -13,8 +13,8 @@ This guide will walk you through setting up and running the Shopify Remix Starte
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/extend-commerce/shopify-remix-starter
-   cd shopify-remix-starter
+   git clone https://github.com/extend-commerce/shopify-react-router-starter
+   cd shopify-react-router-starter
    ```
 
 2. **Install dependencies:**

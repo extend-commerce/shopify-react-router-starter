@@ -1,4 +1,4 @@
-# Shopify Remix Starter
+# Shopify React Router Starter
 
 It is built with React Router, TypeScript, and Vite, and uses Drizzle ORM for database management.
 

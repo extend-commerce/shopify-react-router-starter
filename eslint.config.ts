@@ -12,7 +12,6 @@ export default tseslint.config(
     'build',
     'dist',
     'public/build',
-    'shopify-app-remix',
     '*.yml',
     '.shopify',
     '.react-router',

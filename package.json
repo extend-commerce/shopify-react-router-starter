@@ -1,5 +1,5 @@
 {
-  "name": "shopify-remix-starter",
+  "name": "shopify-react-router-starter",
   "private": true,
   "scripts": {
     "format:check": "prettier --check app/ --ignore-unknown --no-error-on-unmatched-pattern",

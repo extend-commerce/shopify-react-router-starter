@@ -13,12 +13,12 @@ before its first deploy:
 
 ```bash
 # Staging
-wrangler d1 create shopify-remix-starter-staging
+wrangler d1 create shopify-react-router-starter-staging
 # paste the returned database_id into wrangler.staging.jsonc's d1_databases entry
 wrangler secret put SHOPIFY_API_SECRET --config wrangler.staging.jsonc
 
 # Production
-wrangler d1 create shopify-remix-starter-production
+wrangler d1 create shopify-react-router-starter-production
 # paste the returned database_id into wrangler.production.jsonc's d1_databases entry
 wrangler secret put SHOPIFY_API_SECRET --config wrangler.production.jsonc
 ```

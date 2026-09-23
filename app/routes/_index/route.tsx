@@ -24,7 +24,7 @@ export default function App() {
       <div className="w-full max-w-2xl bg-white/80 rounded-3xl shadow-xl px-8 py-12 flex flex-col items-center gap-10 border border-primary-100">
         <div className="flex flex-col items-center gap-2">
           <h1 className="text-3xl md:text-4xl font-extrabold text-primary-900 tracking-tight mb-2">
-            Shopify Remix Starter
+            Shopify React Router Starter
           </h1>
           <p className="text-lg md:text-xl text-primary-700 font-medium">
             A tagline about [your app] that describes your value proposition.

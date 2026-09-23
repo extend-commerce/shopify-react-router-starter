@@ -12,7 +12,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 // active because react-router.config.ts opts into `future.v8_viteEnvironmentApi`) builds the
 // "client" environment and its own "ssr" environment, then stops — it has no notion of
 // `@cloudflare/vite-plugin`'s separate Worker environment (named after wrangler.jsonc's `name`,
-// with `-` replaced by `_`: "shopify_remix_starter"), so that environment, which is what
+// with `-` replaced by `_`: "shopify_react_router_starter"), so that environment, which is what
 // wrangler.jsonc's `main` (workers/app.ts) and an actual `wrangler deploy` need, never gets built
 // by a plain `react-router build`.
 //

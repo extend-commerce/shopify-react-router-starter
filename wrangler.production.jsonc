@@ -4,20 +4,20 @@
   // naming convention and why `main`/`assets.directory` point at build output rather than
   // workers/app.ts source). Keep the two files' bindings/vars structurally in sync; only the
   // values (name, database, URL, log level) should differ.
-  "name": "shopify-remix-starter-production",
+  "name": "shopify-react-router-starter-production",
   "compatibility_date": "2026-01-01",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "dist/shopify_remix_starter/index.js",
+  "main": "dist/shopify_react_router_starter/index.js",
   "assets": {
     "directory": "dist/client",
   },
   "d1_databases": [
     {
       "binding": "DB",
-      // Create with `wrangler d1 create shopify-remix-starter-production` and paste the returned
+      // Create with `wrangler d1 create shopify-react-router-starter-production` and paste the returned
       // `database_id` below. A separate database from staging's — never share one across
       // environments.
-      "database_name": "shopify-remix-starter-production",
+      "database_name": "shopify-react-router-starter-production",
       "database_id": "00000000-0000-0000-0000-000000000000",
       "migrations_dir": "./drizzle",
     },
@@ -31,7 +31,7 @@
     "SCOPES": "read_products",
     // Replace once production has a real Workers route/custom domain (see the commented `routes`
     // block below) — must match whatever URL Shopify's app config points at for production.
-    "SHOPIFY_APP_URL": "https://shopify-remix-starter-production.<your-subdomain>.workers.dev",
+    "SHOPIFY_APP_URL": "https://shopify-react-router-starter-production.<your-subdomain>.workers.dev",
     "NODE_ENV": "production",
   },
   // No custom route/domain has been decided yet (shopify.app.toml's application_url is still the

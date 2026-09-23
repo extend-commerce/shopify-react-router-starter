@@ -1,6 +1,6 @@
 # Development Practices
 
-This document outlines the development practices and conventions that should be followed when working on the Shopify Remix Starter.
+This document outlines the development practices and conventions that should be followed when working on the Shopify React Router Starter.
 
 ## Code Style and Formatting
 

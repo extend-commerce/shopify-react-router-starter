@@ -13,7 +13,7 @@ export default function Index() {
   const { products } = useLoaderData<typeof loader>();
 
   return (
-    <s-page heading="Shopify Remix Starter">
+    <s-page heading="Shopify React Router Starter">
       <s-grid
         gridTemplateColumns="repeat(auto-fill, minmax(260px, 1fr))"
         gap="base"

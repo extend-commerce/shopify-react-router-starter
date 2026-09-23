@@ -5,14 +5,14 @@
   // `wrangler.production.jsonc`, each with a D1 binding pointing at a real per-environment
   // database, routes, and vars/secrets. Until then this file's D1 binding is a placeholder that
   // only needs to exist for `wrangler dev --local` (miniflare never talks to the real database).
-  "name": "shopify-remix-starter",
+  "name": "shopify-react-router-starter",
   "compatibility_date": "2026-01-01",
   "compatibility_flags": ["nodejs_compat"],
   "main": "workers/app.ts",
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "shopify-remix-starter-placeholder",
+      "database_name": "shopify-react-router-starter-placeholder",
       "database_id": "00000000-0000-0000-0000-000000000000",
       // Points at drizzle-kit's own output dir (see drizzle.config.ts) so
       // `wrangler d1 migrations apply DB --local` picks up the same migrations `drizzle-kit
