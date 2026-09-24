@@ -1,4 +1,5 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
+import { isProduction } from './lib/env';
 import { PostHogProvider } from './lib/posthog/provider';
 import styles from './styles.css?url';
 
@@ -8,7 +9,7 @@ export function loader() {
   return {
     POSTHOG_PROJECT_API_KEY: process.env.POSTHOG_PROJECT_API_KEY,
     POSTHOG_API_HOST: process.env.POSTHOG_API_HOST,
-    IS_PRODUCTION: process.env.NODE_ENV === 'production',
+    IS_PRODUCTION: isProduction,
   };
 }
 

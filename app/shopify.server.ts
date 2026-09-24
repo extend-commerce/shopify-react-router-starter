@@ -13,12 +13,13 @@ import '@shopify/shopify-api/adapters/cf-worker';
 import { DrizzleSessionStorageSQLite } from '@shopify/shopify-app-session-storage-drizzle';
 import { db } from './db.server';
 import { sessionTable } from './db/schema';
-import logger from './lib/logger';
+import { isProduction } from './lib/env';
+import { getLogger } from './lib/logger';
 import { apiVersion } from './lib/shopify-api-version';
 
 export { apiVersion };
-const isProduction = process.env.NODE_ENV === 'production';
 const logLevel = isProduction ? LogSeverity.Info : LogSeverity.Debug;
+const shopifyLogger = getLogger(['shopify']);
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
@@ -40,7 +41,7 @@ const shopify = shopifyApp({
         [LogSeverity.Debug]: 'debug',
       } as const satisfies Record<LogSeverity, string>;
 
-      logger.log(levelMap[severity], msg);
+      shopifyLogger.log(levelMap[severity], msg);
     },
   },
   future: {

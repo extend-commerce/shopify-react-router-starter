@@ -1,50 +1,57 @@
+import {
+  getLogger as getLogTapeLogger,
+  type Logger as LogTapeLogger,
+} from '@logtape/logtape';
+
 type LogLevel = 'error' | 'warn' | 'info' | 'debug';
+type Meta = Record<string, unknown>;
 
-interface Logger {
-  log(level: LogLevel, message: string, meta?: Record<string, unknown>): void;
-  error(message: unknown, meta?: Record<string, unknown>): void;
-  warn(message: unknown, meta?: Record<string, unknown>): void;
-  info(message: unknown, meta?: Record<string, unknown>): void;
-  debug(message: unknown, meta?: Record<string, unknown>): void;
+export interface Logger {
+  log(level: LogLevel, message: unknown, meta?: Meta): void;
+  error(message: unknown, meta?: Meta): void;
+  warn(message: unknown, meta?: Meta): void;
+  info(message: unknown, meta?: Meta): void;
+  debug(message: unknown, meta?: Meta): void;
+  /** A child logger that adds `meta` to every line it logs. */
+  with(meta: Meta): Logger;
 }
 
-// winston (used previously) pulls in Node's classic `stream`/`util.inherits` machinery, which
-// breaks under the Workers runtime even with the `nodejs_compat` flag (`The "superCtor.prototype"
-// property must be of type object. Received undefined`, thrown from deep inside
-// readable-stream/winston-transport). Workers' `console.*` methods are themselves structured-log
-// sinks (they show up as JSON in `wrangler tail`/the dashboard), so a thin wrapper that shapes the
-// same `{ level, message, ...meta }` payload winston's `format.json()` produced is enough to keep
-// today's call sites (`logger.error(err)`, `logger.log(level, msg)`, `logger.info(msg, meta)`)
-// working without change.
-function log(
-  level: LogLevel,
-  message: unknown,
-  meta?: Record<string, unknown>,
-): void {
-  const payload =
-    message instanceof Error
-      ? { level, message: message.message, stack: message.stack, ...meta }
-      : { level, message, ...meta };
+// LogTape treats `{name}` in a message as a placeholder for a property; our messages (including
+// the Shopify library's, which can contain JSON) are plain text, so braces are escaped.
+const escape = (message: string) =>
+  message.replace(/[{}]/g, brace => brace + brace);
 
-  const serialized = JSON.stringify(payload);
-
-  /* oxlint-disable no-console -- this module is the app's sanctioned console sink */
-  if (level === 'error') {
-    console.error(serialized);
-  } else if (level === 'warn') {
-    console.warn(serialized);
-  } else {
-    console.log(serialized);
+// A thin facade over LogTape (configured in ./config.ts) that keeps the call-site shape
+// `logger.info(msg, meta)` / `logger.error(err)`, so the library can be swapped without touching
+// callers.
+function wrap(target: LogTapeLogger): Logger {
+  function log(level: LogLevel, message: unknown, meta: Meta = {}) {
+    const method = level === 'warn' ? 'warning' : level;
+    if (message instanceof Error) {
+      target[method](escape(message.message), { error: message, ...meta });
+    } else {
+      target[method](escape(String(message)), meta);
+    }
   }
-  /* oxlint-enable no-console */
+
+  return {
+    log,
+    error: (message, meta) => log('error', message, meta),
+    warn: (message, meta) => log('warn', message, meta),
+    info: (message, meta) => log('info', message, meta),
+    debug: (message, meta) => log('debug', message, meta),
+    with: meta => wrap(target.with(meta)),
+  };
 }
 
-const logger: Logger = {
-  log: (level, message, meta) => log(level, message, meta),
-  error: (message, meta) => log('error', message, meta),
-  warn: (message, meta) => log('warn', message, meta),
-  info: (message, meta) => log('info', message, meta),
-  debug: (message, meta) => log('debug', message, meta),
-};
+/**
+ * A logger for a LogTape category, e.g. `getLogger(['app', 'webhooks'])`. Only the `app` and
+ * `shopify` roots are configured (./config.ts); anything logged under another root is dropped.
+ */
+export function getLogger(category: readonly [string, ...string[]]): Logger {
+  return wrap(getLogTapeLogger(category));
+}
+
+const logger = wrap(getLogTapeLogger(['app']));
 
 export default logger;

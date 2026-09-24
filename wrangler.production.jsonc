@@ -11,6 +11,13 @@
   "assets": {
     "directory": "dist/client",
   },
+  // Workers Logs: stores the Worker's console output (app/lib/logger writes one JSON object per
+  // line in deployed builds). To ship logs to an OTel backend, create a destination in the
+  // Cloudflare dashboard and list it under `logs.destinations` (Workers Paid; see
+  // https://developers.cloudflare.com/workers/observability/exporting-opentelemetry-data/).
+  "observability": {
+    "logs": { "enabled": true },
+  },
   "d1_databases": [
     {
       "binding": "DB",

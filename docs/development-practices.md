@@ -40,6 +40,26 @@ We use [TypeScript](https://www.typescriptlang.org/) for static type checking. T
   pnpm run typecheck
   ```
 
+## Logging
+
+Log through `app/lib/logger`, never `console.*` directly. It is a thin wrapper around [LogTape](https://logtape.org/):
+
+```ts
+import logger, { getLogger } from 'app/lib/logger';
+
+logger.info('Received webhook', { topic, shop });
+logger.error(error);
+
+const webhookLogger = getLogger(['app', 'webhooks']); // its own category
+const shopLogger = logger.with({ shop }); // adds `shop` to every line it logs
+```
+
+- **Output:** readable, coloured lines in local dev; one JSON object per line in deployed Workers.
+- **Level:** `info` when `NODE_ENV` is `production`, `debug` everywhere else (including staging).
+- **Categories:** app code logs under `app`; the Shopify library logs under `shopify`, so either can be filtered out on its own.
+- **Request context:** every line logged while handling a request carries `requestId` (Cloudflare's `cf-ray`) and `path`, set in `workers/app.ts`.
+- **Shipping logs:** the staging and production Wrangler configs enable [Workers Logs](https://developers.cloudflare.com/workers/observability/logs/workers-logs/). To send logs to an OpenTelemetry backend (Datadog, Grafana, PostHog, a self-hosted collector, …), create a destination in the Cloudflare dashboard and list it under `observability.logs.destinations` ([docs](https://developers.cloudflare.com/workers/observability/exporting-opentelemetry-data/)). This needs Workers Paid and OTLP/JSON. If you can't meet those, add the [`@logtape/otel`](https://logtape.org/sinks/otel) sink in `app/lib/logger/config.ts` instead; call sites stay the same.
+
 ## Commit Messages
 
 We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification for our commit messages. This helps us maintain a clear and consistent commit history, and allows us to automatically generate changelogs.

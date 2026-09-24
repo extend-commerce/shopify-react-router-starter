@@ -38,6 +38,8 @@
   },
   "dependencies": {
     "@graphql-codegen/cli": "^7.4.2",
+    "@logtape/logtape": "^2.3.7",
+    "@logtape/pretty": "^2.3.7",
     "@react-router/dev": "^7.18.4",
     "@react-router/fs-routes": "^7.18.4",
     "@shopify/shopify-app-react-router": "^3.0.0",

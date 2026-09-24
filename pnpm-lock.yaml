@@ -16,6 +16,12 @@ importers:
       '@graphql-codegen/cli':
         specifier: ^7.4.2
         version: 7.4.2(@parcel/watcher@2.6.0)(@types/node@26.6.2)(graphql@16.14.2)(typescript@6.0.3)
+      '@logtape/logtape':
+        specifier: ^2.3.7
+        version: 2.3.7
+      '@logtape/pretty':
+        specifier: ^2.3.7
+        version: 2.3.7(@logtape/logtape@2.3.7)
       '@react-router/dev':
         specifier: ^7.18.4
         version: 7.18.4(@react-router/serve@7.18.4(react-router@7.18.4(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(typescript@6.0.3))(@types/node@26.6.2)(babel-plugin-macros@3.1.0)(jiti@2.7.0)(lightningcss@1.33.0)(react-router@7.18.4(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(tsx@4.23.15)(typescript@6.0.3)(vite@6.4.3(@types/node@26.6.2)(jiti@2.7.0)(lightningcss@1.33.0)(tsx@4.23.15)(yaml@2.8.1))(wrangler@4.136.3(@cloudflare/workers-types@5.20260923.1)(@types/node@26.6.2))(yaml@2.8.1)
@@ -2076,6 +2082,14 @@ packages:
     resolution: {integrity: sha512-4/0CvEdhi6+KjMxMaVbFM2n2Z44escBRoEYpR+gZg64DdetzGnYm8mcNLcoySaDJZNaBd6wz5DNdgRmcI4hXcg==}
     cpu: [x64]
     os: [win32]
+
+  '@logtape/logtape@2.3.7':
+    resolution: {integrity: sha512-y0X4Liaj9voRRn0aAffCw2HCRpZEibOdmHiOgwsAT0hgHS8MaDKHl9cQGZ8r8uZR+b+yN9qznNYru6z9oOEMVw==}
+
+  '@logtape/pretty@2.3.7':
+    resolution: {integrity: sha512-fLTCJ/tvjSOGiDswKZ0QiyUfPROTdngSRFmovHQxrSv9zGu8H5aJAhhA/1o+OE9FNcJUn+m3VbwzUfT89rjIQw==}
+    peerDependencies:
+      '@logtape/logtape': ^2.3.7
 
   '@mjackson/node-fetch-server@0.2.0':
     resolution: {integrity: sha512-EMlH1e30yzmTpGLQjlFmaDAjyOeZhng1/XCd7DExR8PNAnG/G1tyruZxEoUe11ClnwGhGrtsdnyyUx1frSzjng==}
@@ -7246,6 +7260,12 @@ snapshots:
 
   '@libsql/win32-x64-msvc@0.5.29':
     optional: true
+
+  '@logtape/logtape@2.3.7': {}
+
+  '@logtape/pretty@2.3.7(@logtape/logtape@2.3.7)':
+    dependencies:
+      '@logtape/logtape': 2.3.7
 
   '@mjackson/node-fetch-server@0.2.0': {}
 
