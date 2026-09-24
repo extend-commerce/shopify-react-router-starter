@@ -1,6 +1,6 @@
-import { useLoaderData, type LoaderFunctionArgs } from 'react-router';
 import { getProducts } from 'app/server/products.server';
 import { authenticate } from 'app/shopify.server';
+import { useLoaderData, type LoaderFunctionArgs } from 'react-router';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin } = await authenticate.admin(request);

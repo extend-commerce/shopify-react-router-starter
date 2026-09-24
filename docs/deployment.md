@@ -25,7 +25,9 @@ wrangler secret put SHOPIFY_API_SECRET --config wrangler.production.jsonc
 
 `SHOPIFY_API_KEY`, `SCOPES`, `SHOPIFY_APP_URL`, and `NODE_ENV` are plain `vars` already committed
 in each wrangler file — `SHOPIFY_API_SECRET` is the only value that has to be set out-of-band,
-since it's a real secret (it signs/verifies webhook HMACs and OAuth callbacks).
+since it's a real secret (it signs/verifies webhook HMACs and OAuth callbacks). To add a new
+variable or secret to these environments, see
+[environment-variables.md](./environment-variables.md#staging-and-production).
 
 Once a custom domain is decided for an environment, uncomment and fill in that file's `routes`
 block and update its `SHOPIFY_APP_URL` var to match (both files deploy to their `*.workers.dev`

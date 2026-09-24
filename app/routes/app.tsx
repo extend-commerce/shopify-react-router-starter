@@ -1,9 +1,7 @@
-import { NavMenu } from '@shopify/app-bridge-react';
 import { AppProvider } from '@shopify/shopify-app-react-router/react';
 import { boundary } from '@shopify/shopify-app-react-router/server';
 import { authenticate } from 'app/shopify.server';
 import {
-  Link,
   Outlet,
   useLoaderData,
   useRouteError,
@@ -14,9 +12,7 @@ import {
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
 
-  return {
-    apiKey: process.env.SHOPIFY_API_KEY ?? '',
-  };
+  return { apiKey: process.env.SHOPIFY_API_KEY ?? '' };
 };
 
 export default function App() {
@@ -24,16 +20,12 @@ export default function App() {
 
   return (
     <AppProvider apiKey={apiKey}>
-      {/*
-        Kept as App Bridge's NavMenu (not the Polaris Web Components s-app-nav/s-link
-        pair) since NavMenu doesn't depend on @shopify/polaris, and @shopify/polaris-types
-        doesn't yet type an s-link rel="home" override.
-      */}
-      <NavMenu>
-        <Link to="/app" rel="home">
+      <ui-nav-menu>
+        <a href="/app" rel="home">
           Home
-        </Link>
-      </NavMenu>
+        </a>
+        <a href="/app/additional-products">Additional Products</a>
+      </ui-nav-menu>
       <Outlet />
     </AppProvider>
   );

@@ -22,18 +22,15 @@ importers:
       '@react-router/fs-routes':
         specifier: ^7.18.4
         version: 7.18.4(@react-router/dev@7.18.4(@react-router/serve@7.18.4(react-router@7.18.4(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(typescript@6.0.3))(@types/node@26.6.2)(babel-plugin-macros@3.1.0)(jiti@2.7.0)(lightningcss@1.33.0)(react-router@7.18.4(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(tsx@4.23.15)(typescript@6.0.3)(vite@6.4.3(@types/node@26.6.2)(jiti@2.7.0)(lightningcss@1.33.0)(tsx@4.23.15)(yaml@2.8.1))(wrangler@4.136.3(@cloudflare/workers-types@5.20260923.1)(@types/node@26.6.2))(yaml@2.8.1))(typescript@6.0.3)
-      '@shopify/app-bridge-react':
-        specifier: ^4.2.13
-        version: 4.2.13(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@shopify/shopify-app-react-router':
         specifier: ^3.0.0
         version: 3.0.0(react-dom@19.3.0(react@19.3.0))(react-router@7.18.4(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)
       '@shopify/shopify-app-session-storage-drizzle':
         specifier: ^6.0.0
-        version: 6.0.0(@shopify/shopify-api@15.0.0)(@shopify/shopify-app-session-storage@7.0.0(@shopify/shopify-api@15.0.0))(drizzle-orm@0.45.3(@cloudflare/workers-types@5.20260923.1)(@prisma/client@6.13.0(prisma@6.13.0(typescript@6.0.3))(typescript@6.0.3))(@types/pg@8.23.1)(pg@8.23.0)(prisma@6.13.0(typescript@6.0.3)))
+        version: 6.0.0(@shopify/shopify-api@15.0.0)(@shopify/shopify-app-session-storage@7.0.0(@shopify/shopify-api@15.0.0))(drizzle-orm@0.45.3(@cloudflare/workers-types@5.20260923.1)(@libsql/client@0.18.0)(@prisma/client@6.13.0(prisma@6.13.0(typescript@6.0.3))(typescript@6.0.3))(@types/pg@8.23.1)(pg@8.23.0)(prisma@6.13.0(typescript@6.0.3)))
       drizzle-orm:
         specifier: ^0.45.3
-        version: 0.45.3(@cloudflare/workers-types@5.20260923.1)(@prisma/client@6.13.0(prisma@6.13.0(typescript@6.0.3))(typescript@6.0.3))(@types/pg@8.23.1)(pg@8.23.0)(prisma@6.13.0(typescript@6.0.3))
+        version: 0.45.3(@cloudflare/workers-types@5.20260923.1)(@libsql/client@0.18.0)(@prisma/client@6.13.0(prisma@6.13.0(typescript@6.0.3))(typescript@6.0.3))(@types/pg@8.23.1)(pg@8.23.0)(prisma@6.13.0(typescript@6.0.3))
       isbot:
         specifier: ^5.2.2
         version: 5.2.2
@@ -77,6 +74,9 @@ importers:
       '@commitlint/cz-commitlint':
         specifier: ^21.2.3
         version: 21.2.3(@types/node@26.6.2)(commitizen@4.3.2(@types/node@26.6.2)(typescript@6.0.3))(inquirer@8.2.7(@types/node@26.6.2))(typescript@6.0.3)
+      '@libsql/client':
+        specifier: ^0.18.0
+        version: 0.18.0
       '@shopify/admin-api-client':
         specifier: ^2.0.0
         version: 2.0.0
@@ -2020,6 +2020,63 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
+  '@libsql/client@0.18.0':
+    resolution: {integrity: sha512-zMCCo58vv7w27j7+cnt/GW+X6/Rih6cHZ86PKi0AxCMOqMfrVgG9OZ5lW2bDMJhSeOjsv2szH2nJF3A9l36UmA==}
+
+  '@libsql/core@0.18.0':
+    resolution: {integrity: sha512-N8RR2CIpcgtbKZnXs2KVpw2lJQfinUj3I56e7qRDRpK18Hty0Rr8nr00VmFb4R/DsqOanPB/TaP3+QAQLZeXMg==}
+
+  '@libsql/darwin-arm64@0.5.29':
+    resolution: {integrity: sha512-K+2RIB1OGFPYQbfay48GakLhqf3ArcbHqPFu7EZiaUcRgFcdw8RoltsMyvbj5ix2fY0HV3Q3Ioa/ByvQdaSM0A==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@libsql/darwin-x64@0.5.29':
+    resolution: {integrity: sha512-OtT+KFHsKFy1R5FVadr8FJ2Bb1mghtXTyJkxv0trocq7NuHntSki1eUbxpO5ezJesDvBlqFjnWaYYY516QNLhQ==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@libsql/hrana-client@0.10.0':
+    resolution: {integrity: sha512-OoA4EMqRAC7kn7V2P6EQqRcpZf2W+AjsNIyCizBg339Tq/aMC7sRnzs3SklderhmQWAqEzvv8A2vhxVmWpkVvw==}
+
+  '@libsql/isomorphic-ws@0.1.5':
+    resolution: {integrity: sha512-DtLWIH29onUYR00i0GlQ3UdcTRC6EP4u9w/h9LxpUZJWRMARk6dQwZ6Jkd+QdwVpuAOrdxt18v0K2uIYR3fwFg==}
+
+  '@libsql/linux-arm-gnueabihf@0.5.29':
+    resolution: {integrity: sha512-CD4n4zj7SJTHso4nf5cuMoWoMSS7asn5hHygsDuhRl8jjjCTT3yE+xdUvI4J7zsyb53VO5ISh4cwwOtf6k2UhQ==}
+    cpu: [arm]
+    os: [linux]
+
+  '@libsql/linux-arm-musleabihf@0.5.29':
+    resolution: {integrity: sha512-2Z9qBVpEJV7OeflzIR3+l5yAd4uTOLxklScYTwpZnkm2vDSGlC1PRlueLaufc4EFITkLKXK2MWBpexuNJfMVcg==}
+    cpu: [arm]
+    os: [linux]
+
+  '@libsql/linux-arm64-gnu@0.5.29':
+    resolution: {integrity: sha512-gURBqaiXIGGwFNEaUj8Ldk7Hps4STtG+31aEidCk5evMMdtsdfL3HPCpvys+ZF/tkOs2MWlRWoSq7SOuCE9k3w==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@libsql/linux-arm64-musl@0.5.29':
+    resolution: {integrity: sha512-fwgYZ0H8mUkyVqXZHF3mT/92iIh1N94Owi/f66cPVNsk9BdGKq5gVpoKO+7UxaNzuEH1roJp2QEwsCZMvBLpqg==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@libsql/linux-x64-gnu@0.5.29':
+    resolution: {integrity: sha512-y14V0vY0nmMC6G0pHeJcEarcnGU2H6cm21ZceRkacWHvQAEhAG0latQkCtoS2njFOXiYIg+JYPfAoWKbi82rkg==}
+    cpu: [x64]
+    os: [linux]
+
+  '@libsql/linux-x64-musl@0.5.29':
+    resolution: {integrity: sha512-gquqwA/39tH4pFl+J9n3SOMSymjX+6kZ3kWgY3b94nXFTwac9bnFNMffIomgvlFaC4ArVqMnOZD3nuJ3H3VO1w==}
+    cpu: [x64]
+    os: [linux]
+
+  '@libsql/win32-x64-msvc@0.5.29':
+    resolution: {integrity: sha512-4/0CvEdhi6+KjMxMaVbFM2n2Z44escBRoEYpR+gZg64DdetzGnYm8mcNLcoySaDJZNaBd6wz5DNdgRmcI4hXcg==}
+    cpu: [x64]
+    os: [win32]
+
   '@mjackson/node-fetch-server@0.2.0':
     resolution: {integrity: sha512-EMlH1e30yzmTpGLQjlFmaDAjyOeZhng1/XCd7DExR8PNAnG/G1tyruZxEoUe11ClnwGhGrtsdnyyUx1frSzjng==}
 
@@ -2028,6 +2085,9 @@ packages:
     engines: {node: ^22.20 || ^24.12 || >=25}
     cpu: [x64]
     os: [linux]
+
+  '@neon-rs/load@0.0.4':
+    resolution: {integrity: sha512-kTPhdZyTQxB+2wpiRcFWrDcejc4JI6tkPuS7UZCG4l6Zvc5kU/gGQ/ozvHTh1XR5tS+UlfAfGuPajjzQjCiHCw==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -2508,12 +2568,6 @@ packages:
   '@shopify/api-codegen-preset@3.0.0':
     resolution: {integrity: sha512-NKv+SUggxhHNeYjWFR+LKxb2PVtTaGlm5YJ7/jIGBr8E2v3yuo2TCp9tpcKqbECEhiQVcQzwnyeamW4LhWp92g==}
     engines: {node: '>=22.0.0'}
-
-  '@shopify/app-bridge-react@4.2.13':
-    resolution: {integrity: sha512-9ArXhCNRefHZwVwu/DNll1FOQPiKwPhlGs9IwE9FWw39osG+e0SNImczW4B0WF1b92sdRsTgmFkqp3Vvmi3ARg==}
-    peerDependencies:
-      react: '*'
-      react-dom: '*'
 
   '@shopify/app-bridge-types@0.7.2':
     resolution: {integrity: sha512-Fl4GnQXzJ3h43kvD/i8e1iWP+ynIxue0L1Eezf7GVoGiIYjvu3BqX3au+kHXGx7Us6nQ4Ku6lKdFZP+nAFepCQ==}
@@ -3209,6 +3263,10 @@ packages:
     resolution: {integrity: sha512-y+8xyqdGLL+6sh0tVeHcfP/QDd8gUgbasolJJpY7NgeQGSZ739bDtSiaiDgtoicy+mtYB81dKLxO9xRhCyIB3A==}
     engines: {node: '>=12.20'}
 
+  detect-libc@2.0.2:
+    resolution: {integrity: sha512-UX6sGumvvqSaXgdKGUsgZWqcUyIXZ/vZTrlRT/iobiKhGL0zL4d3osHj3uqllWJK+i+sixDS/3COVEOFbupFyw==}
+    engines: {node: '>=8'}
+
   detect-libc@2.0.4:
     resolution: {integrity: sha512-3UDv+G9CsCKO1WKMGw9fwq/SWJYbI0c5Y7LU1AXYoDdbhE2AHQ6N6Nb34sG8Fj7T5APy8qXDCKuuIHd1BR0tVA==}
     engines: {node: '>=8'}
@@ -3842,6 +3900,9 @@ packages:
   jose@5.10.0:
     resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
 
+  js-base64@3.9.4:
+    resolution: {integrity: sha512-PtOMXpEGuP0RRiRXsjzHzl44dMHxSu2CPvAhinupR1tBa88me+1DPqsobl7eupn5UukjLkln1ZnAOAOXOrYG0Q==}
+
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
@@ -3875,6 +3936,11 @@ packages:
   kleur@4.1.5:
     resolution: {integrity: sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==}
     engines: {node: '>=6'}
+
+  libsql@0.5.29:
+    resolution: {integrity: sha512-8lMP8iMgiBzzoNbAPQ59qdVcj6UaE/Vnm+fiwX4doX4Narook0a4GPKWBEv+CR8a1OwbfkgL18uBfBjWdF0Fzg==}
+    cpu: [x64, arm64, wasm32, arm]
+    os: [darwin, linux, win32]
 
   lightningcss-android-arm64@1.32.0:
     resolution: {integrity: sha512-YK7/ClTt4kAK0vo6w3X+Pnm0D2cf2vPHbhOXdoNti1Ga0al1P4TBZhwjATvjNwLEBCnKvjJc2jQgHXH0NEwlAg==}
@@ -4487,6 +4553,9 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  promise-limit@2.7.0:
+    resolution: {integrity: sha512-7nJ6v5lnJsXwGprnGXga4wx6d1POjvi5Qmf1ivTRxTjH4Z/9Czja/UCMLVmB9N93GeWOU93XaFaEt6jbuoagNw==}
 
   promise@7.3.1:
     resolution: {integrity: sha512-nolQXZ/4L+bP/UGlkfaIujX9BKxGwmQ9OT4mOt5yvy8iK1h3wqTEJCijzGANTCCl9nWjY41juyAn2K3Q1hLLTg==}
@@ -7120,10 +7189,70 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
+  '@libsql/client@0.18.0':
+    dependencies:
+      '@libsql/core': 0.18.0
+      '@libsql/hrana-client': 0.10.0
+      js-base64: 3.9.4
+      libsql: 0.5.29
+      promise-limit: 2.7.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
+  '@libsql/core@0.18.0':
+    dependencies:
+      js-base64: 3.9.4
+
+  '@libsql/darwin-arm64@0.5.29':
+    optional: true
+
+  '@libsql/darwin-x64@0.5.29':
+    optional: true
+
+  '@libsql/hrana-client@0.10.0':
+    dependencies:
+      '@libsql/isomorphic-ws': 0.1.5
+      js-base64: 3.9.4
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
+  '@libsql/isomorphic-ws@0.1.5':
+    dependencies:
+      '@types/ws': 8.18.1
+      ws: 8.21.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
+  '@libsql/linux-arm-gnueabihf@0.5.29':
+    optional: true
+
+  '@libsql/linux-arm-musleabihf@0.5.29':
+    optional: true
+
+  '@libsql/linux-arm64-gnu@0.5.29':
+    optional: true
+
+  '@libsql/linux-arm64-musl@0.5.29':
+    optional: true
+
+  '@libsql/linux-x64-gnu@0.5.29':
+    optional: true
+
+  '@libsql/linux-x64-musl@0.5.29':
+    optional: true
+
+  '@libsql/win32-x64-msvc@0.5.29':
+    optional: true
+
   '@mjackson/node-fetch-server@0.2.0': {}
 
   '@napi-rs/lzma-linux-x64-gnu@1.5.1':
     optional: true
+
+  '@neon-rs/load@0.0.4': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -7524,12 +7653,6 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@shopify/app-bridge-react@4.2.13(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@shopify/app-bridge-types': 0.7.2
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-
   '@shopify/app-bridge-types@0.7.2':
     dependencies:
       '@standard-schema/spec': 1.0.0
@@ -7571,11 +7694,11 @@ snapshots:
       react-dom: 19.3.0(react@19.3.0)
       react-router: 7.18.4(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
 
-  '@shopify/shopify-app-session-storage-drizzle@6.0.0(@shopify/shopify-api@15.0.0)(@shopify/shopify-app-session-storage@7.0.0(@shopify/shopify-api@15.0.0))(drizzle-orm@0.45.3(@cloudflare/workers-types@5.20260923.1)(@prisma/client@6.13.0(prisma@6.13.0(typescript@6.0.3))(typescript@6.0.3))(@types/pg@8.23.1)(pg@8.23.0)(prisma@6.13.0(typescript@6.0.3)))':
+  '@shopify/shopify-app-session-storage-drizzle@6.0.0(@shopify/shopify-api@15.0.0)(@shopify/shopify-app-session-storage@7.0.0(@shopify/shopify-api@15.0.0))(drizzle-orm@0.45.3(@cloudflare/workers-types@5.20260923.1)(@libsql/client@0.18.0)(@prisma/client@6.13.0(prisma@6.13.0(typescript@6.0.3))(typescript@6.0.3))(@types/pg@8.23.1)(pg@8.23.0)(prisma@6.13.0(typescript@6.0.3)))':
     dependencies:
       '@shopify/shopify-api': 15.0.0
       '@shopify/shopify-app-session-storage': 7.0.0(@shopify/shopify-api@15.0.0)
-      drizzle-orm: 0.45.3(@cloudflare/workers-types@5.20260923.1)(@prisma/client@6.13.0(prisma@6.13.0(typescript@6.0.3))(typescript@6.0.3))(@types/pg@8.23.1)(pg@8.23.0)(prisma@6.13.0(typescript@6.0.3))
+      drizzle-orm: 0.45.3(@cloudflare/workers-types@5.20260923.1)(@libsql/client@0.18.0)(@prisma/client@6.13.0(prisma@6.13.0(typescript@6.0.3))(typescript@6.0.3))(@types/pg@8.23.1)(pg@8.23.0)(prisma@6.13.0(typescript@6.0.3))
       tslib: 2.8.1
 
   '@shopify/shopify-app-session-storage@7.0.0(@shopify/shopify-api@15.0.0)':
@@ -8277,6 +8400,8 @@ snapshots:
 
   detect-indent@7.0.2: {}
 
+  detect-libc@2.0.2: {}
+
   detect-libc@2.0.4: {}
 
   detect-libc@2.1.2: {}
@@ -8304,9 +8429,10 @@ snapshots:
       esbuild: 0.25.8
       tsx: 4.23.15
 
-  drizzle-orm@0.45.3(@cloudflare/workers-types@5.20260923.1)(@prisma/client@6.13.0(prisma@6.13.0(typescript@6.0.3))(typescript@6.0.3))(@types/pg@8.23.1)(pg@8.23.0)(prisma@6.13.0(typescript@6.0.3)):
+  drizzle-orm@0.45.3(@cloudflare/workers-types@5.20260923.1)(@libsql/client@0.18.0)(@prisma/client@6.13.0(prisma@6.13.0(typescript@6.0.3))(typescript@6.0.3))(@types/pg@8.23.1)(pg@8.23.0)(prisma@6.13.0(typescript@6.0.3)):
     optionalDependencies:
       '@cloudflare/workers-types': 5.20260923.1
+      '@libsql/client': 0.18.0
       '@prisma/client': 6.13.0(prisma@6.13.0(typescript@6.0.3))(typescript@6.0.3)
       '@types/pg': 8.23.1
       pg: 8.23.0
@@ -8970,6 +9096,8 @@ snapshots:
 
   jose@5.10.0: {}
 
+  js-base64@3.9.4: {}
+
   js-tokens@4.0.0: {}
 
   js-yaml@4.1.0:
@@ -8996,6 +9124,21 @@ snapshots:
       graceful-fs: 4.2.11
 
   kleur@4.1.5: {}
+
+  libsql@0.5.29:
+    dependencies:
+      '@neon-rs/load': 0.0.4
+      detect-libc: 2.0.2
+    optionalDependencies:
+      '@libsql/darwin-arm64': 0.5.29
+      '@libsql/darwin-x64': 0.5.29
+      '@libsql/linux-arm-gnueabihf': 0.5.29
+      '@libsql/linux-arm-musleabihf': 0.5.29
+      '@libsql/linux-arm64-gnu': 0.5.29
+      '@libsql/linux-arm64-musl': 0.5.29
+      '@libsql/linux-x64-gnu': 0.5.29
+      '@libsql/linux-x64-musl': 0.5.29
+      '@libsql/win32-x64-msvc': 0.5.29
 
   lightningcss-android-arm64@1.32.0:
     optional: true
@@ -9583,6 +9726,8 @@ snapshots:
     transitivePeerDependencies:
       - magicast
     optional: true
+
+  promise-limit@2.7.0: {}
 
   promise@7.3.1:
     dependencies:

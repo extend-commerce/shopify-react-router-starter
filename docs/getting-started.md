@@ -25,7 +25,10 @@ This guide will walk you through setting up and running the Shopify React Router
 
 3. **Set up environment variables:**
 
-   Create a `.env` file in the root of the project and add the necessary environment variables. You can use the `.env.example` file as a template.
+   Copy `.env.example` to `.env` and fill in the values. Use `.env`, not `.dev.vars`: a `.dev.vars`
+   file stops the app from loading in the Shopify admin. See
+   [environment-variables.md](./environment-variables.md) for details and for how to add new
+   variables.
 
 4. **Set up the database:**
 

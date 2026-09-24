@@ -1,7 +1,7 @@
-import { useLoaderData } from 'react-router';
 import posthog from 'posthog-js';
 import { PostHogProvider as PostHogProviderReact } from 'posthog-js/react';
 import { type PropsWithChildren, useEffect, useState } from 'react';
+import { useLoaderData } from 'react-router';
 
 interface RootLoaderData {
   POSTHOG_PROJECT_API_KEY: string;

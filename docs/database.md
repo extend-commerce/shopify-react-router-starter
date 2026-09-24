@@ -34,7 +34,7 @@ whichever wrangler config you're working against:
 
 ```bash
 # Local D1 (root wrangler.jsonc, used by `pnpm start`)
-wrangler d1 migrations apply DB --local
+pnpm run db:migrate                  # also run automatically by `pnpm run dev`
 
 # Staging / production — see deployment.md
 pnpm run db:migrate:staging          # local D1 against the staging config
@@ -42,3 +42,14 @@ pnpm run db:migrate:staging:remote   # the real staging database
 pnpm run db:migrate:production       # local D1 against the production config
 pnpm run db:migrate:production:remote # the real production database
 ```
+
+## Browsing the Local Database
+
+```bash
+pnpm run db:studio
+```
+
+This opens [Drizzle Studio](https://orm.drizzle.team/drizzle-studio/overview) against the local D1
+database that `pnpm run db:migrate` (or `pnpm run dev`) creates under `.wrangler/state`. Run a
+migration first if it reports a missing `url`. It only connects to the local database, never the
+staging or production ones.

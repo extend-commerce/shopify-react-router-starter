@@ -43,14 +43,9 @@ const shopify = shopifyApp({
       logger.log(levelMap[severity], msg);
     },
   },
-  hooks: {
-    async afterAuth({ session }) {
-      await shopify.registerWebhooks({ session });
-    },
+  future: {
+    expiringOfflineAccessTokens: true,
   },
-  ...(process.env.SHOP_CUSTOM_DOMAIN
-    ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
-    : {}),
 });
 
 export default shopify;

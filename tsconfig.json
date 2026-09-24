@@ -1,5 +1,11 @@
 {
-  "include": ["env.d.ts", "**/*.ts", "**/*.tsx", ".graphqlrc.ts"],
+  "include": [
+    "env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".graphqlrc.ts",
+    ".react-router/types/**/*"
+  ],
   "exclude": [
     "node_modules",
     "build",
@@ -36,6 +42,7 @@
       "@shopify/polaris-types",
       "vite/client"
     ],
+    "rootDirs": [".", "./.react-router/types"],
     "paths": {
       "app/*": ["./app/*"]
     }
