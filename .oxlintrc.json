@@ -31,7 +31,6 @@
     "*.yml",
     ".shopify",
     ".react-router",
-    "postcss.config.mjs",
     ".husky",
     "./app/types/**/*.d.ts"
   ],

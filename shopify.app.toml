@@ -10,6 +10,8 @@ name = "Extend React Router Starter"
 scopes = "read_products"
 
 [auth]
+# Unused: managed installation needs no OAuth callback, but Shopify requires at least one entry
+# before an app can be made public.
 redirect_urls = [ "https://example.com/api/auth" ]
 
 [webhooks]
