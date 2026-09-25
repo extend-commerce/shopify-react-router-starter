@@ -18,8 +18,9 @@ export interface Logger {
 
 // LogTape treats `{name}` in a message as a placeholder for a property; our messages (including
 // the Shopify library's, which can contain JSON) are plain text, so braces are escaped.
-const escape = (message: string) =>
-  message.replace(/[{}]/g, brace => brace + brace);
+function escape(message: string) {
+  return message.replace(/[{}]/g, brace => brace + brace);
+}
 
 // A thin facade over LogTape (configured in ./config.ts) that keeps the call-site shape
 // `logger.info(msg, meta)` / `logger.error(err)`, so the library can be swapped without touching
