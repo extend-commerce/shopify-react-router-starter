@@ -157,7 +157,4 @@ export default defineConfig({
       external: ['cloudflare:workers'],
     },
   },
-  optimizeDeps: {
-    include: ['@shopify/app-bridge-react'],
-  },
 }) satisfies UserConfig;

@@ -20,12 +20,18 @@ export default function App() {
 
   return (
     <AppProvider apiKey={apiKey}>
-      <ui-nav-menu>
-        <a href="/app" rel="home">
+      <s-app-nav>
+        <s-link
+          href="/app"
+          // Makes the app name in the admin open /app instead of /, and hides this link from
+          // the menu. Documented for s-app-nav links, but @shopify/polaris-types doesn't type it.
+          // @ts-expect-error -- remove once polaris-types adds `rel` to s-link
+          rel="home"
+        >
           Home
-        </a>
-        <a href="/app/additional-products">Additional Products</a>
-      </ui-nav-menu>
+        </s-link>
+        <s-link href="/app/additional">Additional page</s-link>
+      </s-app-nav>
       <Outlet />
     </AppProvider>
   );

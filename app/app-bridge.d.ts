@@ -1,7 +1,9 @@
+// @shopify/app-bridge-types adds its elements to the global JSX namespace, which React 19's types
+// no longer read, so re-declare them on React's. The s-* Polaris elements (s-page, s-link, ...)
+// are already typed on React's namespace by @shopify/polaris-types.
 import {
   type SAppNavAttributes,
   type SAppWindowAttributes,
-  type SPageAttributes,
   type UIModalAttributes,
   type UINavMenuAttributes,
   type UISaveBarAttributes,
@@ -15,7 +17,6 @@ interface AppBridgeElements {
   's-app-nav': SAppNavAttributes;
   'ui-save-bar': UISaveBarAttributes;
   'ui-title-bar': UITitleBarAttributes;
-  's-page': SPageAttributes;
 }
 
 declare module 'react' {

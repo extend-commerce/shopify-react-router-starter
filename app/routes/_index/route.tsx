@@ -9,6 +9,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     throw redirect(`/app?${url.searchParams.toString()}`);
   }
 
+  // Inside the admin, App Bridge can also move the app to / with a client-side navigation (e.g.
+  // when the merchant clicks the app name), which requests this loader's data without ?shop but
+  // with App Bridge's session token. Send it on to /app, which verifies the token; a forged header
+  // only gets as far as that check.
+  if (request.headers.get('Authorization')?.startsWith('Bearer ')) {
+    throw redirect('/app');
+  }
+
   return null;
 };
 

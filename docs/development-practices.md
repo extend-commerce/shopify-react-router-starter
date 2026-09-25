@@ -40,6 +40,22 @@ We use [TypeScript](https://www.typescriptlang.org/) for static type checking. T
   pnpm run typecheck
   ```
 
+## Links and Navigation
+
+The app only runs embedded in the Shopify admin, so navigation goes through App Bridge and Polaris web components, as in [Shopify's React Router template](https://github.com/Shopify/shopify-app-template-react-router):
+
+- **App nav:** `<s-app-nav>` in `app/routes/app.tsx`, with one `<s-link>` per page ([docs](https://shopify.dev/docs/api/app-home/app-bridge-web-components/app-nav)). The `/app` link carries `rel="home"`, so the app name in the admin opens `/app` and the link itself stays out of the menu.
+- **Links between pages:** `<s-link href="/app/...">`. Polaris turns the click into a `shopify:navigate` event, and `AppProvider` hands that to React Router as a client-side navigation.
+- **Never a plain `<a href="/app/...">`.** The browser then loads the page from scratch without the `shop`, `host` and `id_token` params the admin added, so authentication fails and the app shows a blank or bounce page.
+- **External links:** `<s-link href="https://..." target="_blank">`.
+- **Buttons:** `<s-button onClick={...}>`. Use the `shopify` global (typed by `@shopify/app-bridge-types`) for App Bridge APIs such as toasts and `shopify.intents`.
+
+`app/app-bridge.d.ts` types the App Bridge elements (`s-app-nav`, `ui-modal`, `ui-save-bar`, ...) for React 19, which `@shopify/app-bridge-types` doesn't reach on its own.
+
+## Pinned Versions
+
+- **`react-router`, `@react-router/dev`, `@react-router/fs-routes` at `7.18.2`:** 7.18.3 and later compare the full request origin on actions, which makes every `action` return `400 Bad Request` under `shopify app dev` ([template issue #279](https://github.com/Shopify/shopify-app-template-react-router/issues/279)). This matches Shopify's template. `@shopify/shopify-app-react-router` doesn't support React Router 8 yet either ([shopify-app-js#3319](https://github.com/Shopify/shopify-app-js/issues/3319)).
+
 ## Logging
 
 Log through `app/lib/logger`, never `console.*` directly. It is a thin wrapper around [LogTape](https://logtape.org/):
