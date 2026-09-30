@@ -1,10 +1,8 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  // Local-dev/build config only, for `wrangler dev` and the Vite Cloudflare plugin to target.
-  // Piece 3 (wrangler-configuration ticket) replaces this with `wrangler.staging.jsonc` /
-  // `wrangler.production.jsonc`, each with a D1 binding pointing at a real per-environment
-  // database, routes, and vars/secrets. Until then this file's D1 binding is a placeholder that
-  // only needs to exist for `wrangler dev --local` (miniflare never talks to the real database).
+  // Local dev only (`pnpm dev`). Staging and production have their own wrangler files and
+  // are never started from this one. The D1 id is a placeholder: miniflare never talks to
+  // a remote database.
   "name": "shopify-react-router-starter",
   "compatibility_date": "2026-01-01",
   "compatibility_flags": ["nodejs_compat"],
@@ -20,4 +18,15 @@
       "migrations_dir": "./drizzle",
     },
   ],
+  // Allowlist of shell env copied into the Worker. The Shopify CLI injects the first
+  // three; vite.config.ts maps HOST or APP_URL onto SHOPIFY_APP_URL. Anything else in
+  // the shell stays out.
+  "secrets": {
+    "required": [
+      "SHOPIFY_API_KEY",
+      "SHOPIFY_API_SECRET",
+      "SCOPES",
+      "SHOPIFY_APP_URL"
+    ],
+  },
 }

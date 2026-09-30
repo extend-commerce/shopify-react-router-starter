@@ -24,9 +24,11 @@ wrangler secret put SHOPIFY_API_SECRET --config wrangler.production.jsonc
 ```
 
 `SHOPIFY_API_KEY`, `SCOPES`, `SHOPIFY_APP_URL`, and `NODE_ENV` are plain `vars` already committed
-in each wrangler file — `SHOPIFY_API_SECRET` is the only value that has to be set out-of-band,
-since it's a real secret (it signs/verifies webhook HMACs and OAuth callbacks). To add a new
-variable or secret to these environments, see
+in each wrangler file. `SHOPIFY_API_SECRET` is the only value set out-of-band, since it's a real
+secret (it signs/verifies webhook HMACs and OAuth callbacks). Each deployed file lists it under
+`secrets.required`, so `wrangler deploy` fails while it is unset. Production also has optional
+`POSTHOG_API_HOST` and `POSTHOG_PROJECT_API_KEY` vars; leave them blank to keep PostHog off. To
+add a new variable or secret, see
 [environment-variables.md](./environment-variables.md#staging-and-production).
 
 Once a custom domain is decided for an environment, uncomment and fill in that file's `routes`
@@ -48,16 +50,5 @@ pnpm run db:migrate:staging:remote
 pnpm run db:migrate:production:remote
 ```
 
-## Local verification against a deployed-shaped config
-
-To exercise the staging wrangler config locally (real `wrangler dev`, local D1, no network calls
-to the real staging database):
-
-```bash
-pnpm run db:migrate:staging    # applies migrations to a local D1 instance
-pnpm run dev:staging           # builds, then wrangler dev --config wrangler.staging.jsonc
-```
-
-This is distinct from `pnpm start` (day-to-day local development against the root
-`wrangler.jsonc`, with Vite's HMR) — use `dev:staging` when you specifically want to check the
-staging config's bindings/vars against a real (local) Workers runtime before deploying.
+Staging and production run only as deployed Workers. Day-to-day local development is `pnpm dev`,
+against the root `wrangler.jsonc`.

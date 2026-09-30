@@ -61,42 +61,16 @@ function buildCloudflareWorkerEnvironment(): Plugin {
   };
 }
 
-// Related: https://github.com/remix-run/remix/issues/2835#issuecomment-1144102176
-// Replace the HOST env var with SHOPIFY_APP_URL so that it doesn't break the dev server. The CLI will eventually
-// stop passing in HOST, so we can remove this workaround after the next major release.
-if (
-  process.env.HOST &&
-  (!process.env.SHOPIFY_APP_URL ||
-    process.env.SHOPIFY_APP_URL === process.env.HOST)
-) {
+// The Shopify CLI sets HOST and APP_URL, never SHOPIFY_APP_URL. Copy it across
+// before the Cloudflare plugin builds the Worker's env. The local wrangler
+// allowlist is what enters the Worker, so HOST itself stays in this process.
+if (!process.env.SHOPIFY_APP_URL) {
   // @ts-expect-error - SHOPIFY_APP_URL is read-only
-  process.env.SHOPIFY_APP_URL = process.env.HOST;
-  delete process.env.HOST;
+  process.env.SHOPIFY_APP_URL = process.env.HOST ?? process.env.APP_URL;
 }
 
 const host = new URL(process.env.SHOPIFY_APP_URL || 'http://localhost')
   .hostname;
-
-// The app runs inside workerd, whose `process.env` is built from wrangler `vars` plus local env
-// files — not from this Node process's env. `shopify app dev` injects the real app credentials
-// and the tunnel URL into this process only, so tell @cloudflare/vite-plugin to pass this
-// process's env through to the Worker too (on top of `.env`/`.env.local`, with the real env
-// taking precedence). Note this only works with `.env` files: if a `.dev.vars` file exists,
-// wrangler loads it exclusively and ignores both `.env` and process.env. See
-// docs/environment-variables.md.
-//
-// Dev server only: on a build the plugin writes the same merged vars to `dist/<worker>/.dev.vars`
-// for preview, and with this flag on that file would capture the whole shell environment
-// (including anything a CI runner exports). This is decided once from the CLI command rather than
-// from a plugin `config` hook's `command`, because `react-router build` also resolves this config
-// in `serve` mode mid-build, which would switch the flag back on before the Worker bundle is
-// written.
-const isBuild =
-  process.env.IS_REACT_ROUTER_BUILD === '1' ||
-  process.argv.slice(2).includes('build');
-if (!isBuild) {
-  process.env.CLOUDFLARE_INCLUDE_PROCESS_ENV ??= 'true';
-}
 
 let hmrConfig;
 if (host === 'localhost') {

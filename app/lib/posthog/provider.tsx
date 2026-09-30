@@ -4,8 +4,8 @@ import { type PropsWithChildren, useEffect, useState } from 'react';
 import { useLoaderData } from 'react-router';
 
 interface RootLoaderData {
-  POSTHOG_PROJECT_API_KEY: string;
-  POSTHOG_API_HOST: string;
+  POSTHOG_PROJECT_API_KEY?: string;
+  POSTHOG_API_HOST?: string;
   IS_PRODUCTION: boolean;
 }
 
@@ -16,15 +16,8 @@ export function PostHogProvider({ children }: PropsWithChildren) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    if (!IS_PRODUCTION) return;
-
-    if (!POSTHOG_PROJECT_API_KEY) {
-      throw new Error('POSTHOG_PROJECT_API_KEY must be set');
-    }
-
-    if (!POSTHOG_API_HOST) {
-      throw new Error('POSTHOG_API_HOST must be set');
-    }
+    // Blank keys mean PostHog is off, including in production.
+    if (!IS_PRODUCTION || !POSTHOG_PROJECT_API_KEY || !POSTHOG_API_HOST) return;
 
     posthog.init(POSTHOG_PROJECT_API_KEY, {
       api_host: POSTHOG_API_HOST,

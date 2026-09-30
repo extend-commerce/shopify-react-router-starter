@@ -23,12 +23,10 @@ This guide will walk you through setting up and running the Shopify React Router
    pnpm install
    ```
 
-3. **Set up environment variables:**
-
-   Copy `.env.example` to `.env` and fill in the values. Use `.env`, not `.dev.vars`: a `.dev.vars`
-   file stops the app from loading in the Shopify admin. See
-   [environment-variables.md](./environment-variables.md) for details and for how to add new
-   variables.
+3. **No env file for local Shopify credentials.** `pnpm dev` receives `SHOPIFY_API_KEY`,
+   `SHOPIFY_API_SECRET`, and `SCOPES` from the Shopify CLI. Do not create a `.dev.vars` file —
+   `pnpm dev` refuses to start when one is present. See
+   [environment-variables.md](./environment-variables.md).
 
 4. **Set up the database:**
 
