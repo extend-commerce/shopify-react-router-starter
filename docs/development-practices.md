@@ -63,17 +63,18 @@ Log through `app/lib/logger`, never `console.*` directly. It is a thin wrapper a
 ```ts
 import logger, { getLogger } from 'app/lib/logger';
 
-logger.info('Received webhook', { topic, shop });
+logger.info('Loaded products');
 logger.error(error);
 
-const webhookLogger = getLogger(['app', 'webhooks']); // its own category
-const shopLogger = logger.with({ shop }); // adds `shop` to every line it logs
+const webhookLogger = getLogger(['app', 'webhooks']);
+webhookLogger.info('Received webhook', { topic });
 ```
 
 - **Output:** readable, coloured lines in local dev; one JSON object per line in deployed Workers.
-- **Level:** `info` when `NODE_ENV` is `production`, `debug` everywhere else (including staging).
-- **Categories:** app code logs under `app`; the Shopify library logs under `shopify`, so either can be filtered out on its own.
-- **Request context:** every line logged while handling a request carries `requestId` (Cloudflare's `cf-ray`) and `path`, set in `workers/app.ts`.
+- **Level:** the `app` category (including `app.webhooks`) is `info` when `NODE_ENV` is `production` and `debug` everywhere else, staging included. The Shopify library is `debug` in local dev and `info` on staging and production.
+- **Categories:** app code logs under `app`; webhook routes log under `app.webhooks`; the Shopify library logs under `shopify`. Each can be filtered on its own.
+- **Request context:** every line logged while handling a request carries `requestId` (Cloudflare's `cf-ray`) and `path`, set in `workers/app.ts`. After `authenticate.admin()` or `authenticate.webhook()` returns, lines also carry `shop` (the `*.myshopify.com` domain) and `sessionId` (`offline_<shop>`). A webhook with no session omits `sessionId`. `logger.with()` still adds extra fields to one logger.
+- **Shopify debug lines:** `httpRequests` is off, and the log bridge strips `sessionToken` and the decoded `payload` before they are written.
 - **Shipping logs:** the staging and production Wrangler configs enable [Workers Logs](https://developers.cloudflare.com/workers/observability/logs/workers-logs/). To send logs to an OpenTelemetry backend (Datadog, Grafana, PostHog, a self-hosted collector, …), create a destination in the Cloudflare dashboard and list it under `observability.logs.destinations` ([docs](https://developers.cloudflare.com/workers/observability/exporting-opentelemetry-data/)). This needs Workers Paid and OTLP/JSON. If you can't meet those, add the [`@logtape/otel`](https://logtape.org/sinks/otel) sink in `app/lib/logger/config.ts` instead; call sites stay the same.
 
 ## Commit Messages

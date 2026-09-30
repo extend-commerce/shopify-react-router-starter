@@ -13,12 +13,15 @@ import '@shopify/shopify-api/adapters/cf-worker';
 import { DrizzleSessionStorageSQLite } from '@shopify/shopify-app-session-storage-drizzle';
 import { db } from './db.server';
 import { sessionTable } from './db/schema';
-import { isProduction } from './lib/env';
-import { getLogger } from './lib/logger';
+import { extendLogContext, getLogger } from './lib/logger';
+import { redactShopifyLogMessage } from './lib/logger/redact-shopify-message';
 import { apiVersion } from './lib/shopify-api-version';
 
 export { apiVersion };
-const logLevel = isProduction ? LogSeverity.Info : LogSeverity.Debug;
+// Debug locally, where `import.meta.env.DEV` is set. Staging and production stay at info.
+const shopifyLogLevel = import.meta.env.DEV
+  ? LogSeverity.Debug
+  : LogSeverity.Info;
 const shopifyLogger = getLogger(['shopify']);
 
 const shopify = shopifyApp({
@@ -31,8 +34,9 @@ const shopify = shopifyApp({
   sessionStorage: new DrizzleSessionStorageSQLite(db, sessionTable),
   distribution: AppDistribution.AppStore,
   logger: {
-    level: logLevel,
-    httpRequests: true,
+    level: shopifyLogLevel,
+    // Off even when the level is debug: otherwise every Admin API call logs its response headers.
+    httpRequests: false,
     log: (severity: LogSeverity, msg: string) => {
       const levelMap = {
         [LogSeverity.Error]: 'error',
@@ -41,7 +45,7 @@ const shopify = shopifyApp({
         [LogSeverity.Debug]: 'debug',
       } as const satisfies Record<LogSeverity, string>;
 
-      shopifyLogger.log(levelMap[severity], msg);
+      shopifyLogger.log(levelMap[severity], redactShopifyLogMessage(msg));
     },
   },
   future: {
@@ -51,7 +55,32 @@ const shopify = shopifyApp({
 
 export default shopify;
 export const addDocumentResponseHeaders = shopify.addDocumentResponseHeaders;
-export const authenticate = shopify.authenticate;
+
+// Shop and session id exist only after auth succeeds. `enterWith` stamps them on the rest of
+// this request; lines emitted inside `authenticate` itself still carry only requestId and path.
+async function authenticateAdmin(request: Request) {
+  const result = await shopify.authenticate.admin(request);
+  extendLogContext({
+    shop: result.session.shop,
+    sessionId: result.session.id,
+  });
+  return result;
+}
+
+async function authenticateWebhook(request: Request) {
+  const result = await shopify.authenticate.webhook(request);
+  extendLogContext({
+    shop: result.shop,
+    ...(result.session ? { sessionId: result.session.id } : {}),
+  });
+  return result;
+}
+
+export const authenticate = {
+  ...shopify.authenticate,
+  admin: authenticateAdmin,
+  webhook: authenticateWebhook,
+} satisfies typeof shopify.authenticate;
 export const unauthenticated = shopify.unauthenticated;
 export const registerWebhooks = shopify.registerWebhooks;
 export const sessionStorage = shopify.sessionStorage;

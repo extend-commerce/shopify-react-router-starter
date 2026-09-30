@@ -28,6 +28,7 @@ export default {
     const loadContext: AppLoadContext = { cloudflare: { env, ctx } };
     // Every log line written while handling this request carries its id and path. `cf-ray` is
     // Cloudflare's per-request id, so a log line can be matched to the request in the dashboard.
+    // Shop and session id are added later, once authenticate has a session.
     const requestId = request.headers.get('cf-ray') ?? crypto.randomUUID();
     const { pathname } = new URL(request.url);
     return withContext({ requestId, path: pathname }, () =>

@@ -1,13 +1,15 @@
 import { db } from 'app/db.server';
 import { sessionTable } from 'app/db/schema';
-import logger from 'app/lib/logger';
+import { getLogger } from 'app/lib/logger';
 import { authenticate } from 'app/shopify.server';
 import { eq } from 'drizzle-orm';
 import { type ActionFunctionArgs } from 'react-router';
 
+const logger = getLogger(['app', 'webhooks']);
+
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { payload, session, topic, shop } = await authenticate.webhook(request);
-  logger.info(`Received webhook`, { topic, shop });
+  const { payload, session, topic } = await authenticate.webhook(request);
+  logger.info(`Received webhook`, { topic });
 
   const current = payload.current as string[];
   if (session) {

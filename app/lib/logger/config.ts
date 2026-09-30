@@ -15,26 +15,39 @@ const jsonFormatter: TextFormatter = record => jsonLines(record).trimEnd();
 
 let configured = false;
 
+// Same store LogTape reads. `withContext` in the Worker entry sets `requestId` and `path`;
+// `extendLogContext` adds fields later in the request (shop, session id) without a callback.
+const contextLocalStorage = new AsyncLocalStorage<Record<string, unknown>>();
+
+export function extendLogContext(context: Record<string, unknown>): void {
+  const parent = contextLocalStorage.getStore() ?? {};
+  contextLocalStorage.enterWith({ ...parent, ...context });
+}
+
 // Called once from the Worker entry. `contextLocalStorage` enables `withContext()`, which the
 // entry uses to stamp every log line of a request with its `requestId`/`path`.
 export function configureLogging(): void {
   if (configured) return;
   configured = true;
 
-  const lowestLevel = isProduction ? 'info' : 'debug';
+  // App code stays debug on staging. The Shopify library is debug only in local dev; staging
+  // and production stay at info so those debug lines (session tokens, API chatter) are never built.
+  const appLevel = isProduction ? 'info' : 'debug';
+  const shopifyLevel = import.meta.env.DEV ? 'debug' : 'info';
 
   configureSync({
-    contextLocalStorage: new AsyncLocalStorage(),
+    contextLocalStorage,
     sinks: {
       console: getConsoleSink({
         formatter: import.meta.env.DEV ? getPrettyFormatter() : jsonFormatter,
       }),
     },
     loggers: [
-      { category: ['app'], sinks: ['console'], lowestLevel },
+      // `app.webhooks` inherits this logger, so webhook routes are filterable without their own level.
+      { category: ['app'], sinks: ['console'], lowestLevel: appLevel },
       // Logs from @shopify/shopify-app-react-router, bridged in shopify.server.ts. Kept as its own
       // category so a log backend can filter it apart from app logs.
-      { category: ['shopify'], sinks: ['console'], lowestLevel },
+      { category: ['shopify'], sinks: ['console'], lowestLevel: shopifyLevel },
       // LogTape's own meta logger (sink errors etc.).
       {
         category: ['logtape', 'meta'],

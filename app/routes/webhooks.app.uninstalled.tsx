@@ -1,14 +1,16 @@
 import { db } from 'app/db.server';
 import { sessionTable } from 'app/db/schema';
-import logger from 'app/lib/logger';
+import { getLogger } from 'app/lib/logger';
 import { authenticate } from 'app/shopify.server';
 import { eq } from 'drizzle-orm';
 import { type ActionFunctionArgs } from 'react-router';
 
+const logger = getLogger(['app', 'webhooks']);
+
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { shop, session, topic } = await authenticate.webhook(request);
 
-  logger.info(`Received webhook`, { topic, shop });
+  logger.info(`Received webhook`, { topic });
 
   // Webhook requests can trigger multiple times and after an app has already been uninstalled.
   // If this webhook already ran, the session may have been deleted previously.

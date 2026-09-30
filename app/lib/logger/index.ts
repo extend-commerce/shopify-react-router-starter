@@ -53,6 +53,8 @@ export function getLogger(category: readonly [string, ...string[]]): Logger {
   return wrap(getLogTapeLogger(category));
 }
 
+export { extendLogContext } from './config';
+
 const logger = wrap(getLogTapeLogger(['app']));
 
 export default logger;
