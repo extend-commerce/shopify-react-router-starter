@@ -19,9 +19,12 @@ let configured = false;
 // `extendLogContext` adds fields later in the request (shop, session id) without a callback.
 const contextLocalStorage = new AsyncLocalStorage<Record<string, unknown>>();
 
+// workerd doesn't implement `enterWith()`, so this mutates the store instead. `withContext`
+// creates a fresh object per call and LogTape reads it on every log, so the new fields reach
+// every later line of this request and never leak into another. Outside a request it's a no-op.
 export function extendLogContext(context: Record<string, unknown>): void {
-  const parent = contextLocalStorage.getStore() ?? {};
-  contextLocalStorage.enterWith({ ...parent, ...context });
+  const store = contextLocalStorage.getStore();
+  if (store) Object.assign(store, context);
 }
 
 // Called once from the Worker entry. `contextLocalStorage` enables `withContext()`, which the

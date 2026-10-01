@@ -56,8 +56,8 @@ const shopify = shopifyApp({
 export default shopify;
 export const addDocumentResponseHeaders = shopify.addDocumentResponseHeaders;
 
-// Shop and session id exist only after auth succeeds. `enterWith` stamps them on the rest of
-// this request; lines emitted inside `authenticate` itself still carry only requestId and path.
+// Shop and session id exist only after auth succeeds. `extendLogContext` stamps them on the rest
+// of this request; lines emitted inside `authenticate` itself still carry only requestId and path.
 async function authenticateAdmin(request: Request) {
   const result = await shopify.authenticate.admin(request);
   extendLogContext({
