@@ -7,7 +7,7 @@
   "name": "shopify-react-router-starter-production",
   "compatibility_date": "2026-01-01",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "dist/shopify_react_router_starter/index.js",
+  "main": "dist/server/index.js",
   "assets": {
     "directory": "dist/client",
   },

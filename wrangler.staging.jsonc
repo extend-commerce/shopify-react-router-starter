@@ -8,18 +8,17 @@
   // `wrangler deploy` accidentally targeting the wrong environment because a default `env` block
   // was picked up.
   //
-  // `main` and `assets.directory` point at build output, not source: `pnpm run build` (via
-  // vite.config.ts's `buildCloudflareWorkerEnvironment` plugin) is what actually produces
-  // `dist/shopify_react_router_starter/index.js` — a real bundled Worker script with no unresolved
-  // virtual modules — from workers/app.ts. `workers/app.ts` itself can't be used as `main` here:
-  // it imports `virtual:react-router/server-build`, which only exists inside a Vite build/dev
-  // server, so plain `wrangler deploy` can't resolve it directly (confirmed by
-  // trying). Run `pnpm run build` before `deploy:staging` (the package.json script does
-  // this for you). This file is deploy-only: staging is not started locally.
+  // `main` and `assets.directory` point at build output, not source: `pnpm run build` bundles
+  // workers/app.ts as React Router's `ssr` environment into `dist/server/index.js` — a real
+  // Worker script with no unresolved virtual modules. `workers/app.ts` itself can't be used as
+  // `main` here: it imports `virtual:react-router/server-build`, which only exists inside a Vite
+  // build/dev server, so plain `wrangler deploy` can't resolve it directly (confirmed by trying).
+  // Run `pnpm run build` before `deploy:staging` (the package.json script does this for you).
+  // This file is deploy-only: staging is not started locally.
   "name": "shopify-react-router-starter-staging",
   "compatibility_date": "2026-01-01",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "dist/shopify_react_router_starter/index.js",
+  "main": "dist/server/index.js",
   "assets": {
     "directory": "dist/client",
   },
