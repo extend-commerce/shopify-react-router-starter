@@ -1,7 +1,4 @@
-import {
-  getLogger as getLogTapeLogger,
-  type Logger as LogTapeLogger,
-} from '@logtape/logtape';
+import { getLogger as getLogTapeLogger, type Logger as LogTapeLogger } from '@logtape/logtape';
 
 type LogLevel = 'error' | 'warn' | 'info' | 'debug';
 type Meta = Record<string, unknown>;

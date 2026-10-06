@@ -31,8 +31,6 @@ export default {
     // Shop and session id are added later, once authenticate has a session.
     const requestId = request.headers.get('cf-ray') ?? crypto.randomUUID();
     const { pathname } = new URL(request.url);
-    return withContext({ requestId, path: pathname }, () =>
-      requestHandler(request, loadContext),
-    );
+    return withContext({ requestId, path: pathname }, () => requestHandler(request, loadContext));
   },
 } satisfies ExportedHandler<Env>;

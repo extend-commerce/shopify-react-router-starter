@@ -4,5 +4,5 @@
   "trailingComma": "all",
   "quoteProps": "consistent",
   "arrowParens": "avoid",
-  "printWidth": 80
+  "printWidth": 100
 }

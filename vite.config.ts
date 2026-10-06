@@ -9,8 +9,7 @@ if (!process.env.SHOPIFY_APP_URL && cliAppUrl) {
   process.env.SHOPIFY_APP_URL = cliAppUrl;
 }
 
-const host = new URL(process.env.SHOPIFY_APP_URL || 'http://localhost')
-  .hostname;
+const host = new URL(process.env.SHOPIFY_APP_URL || 'http://localhost').hostname;
 
 export default defineConfig({
   server: {

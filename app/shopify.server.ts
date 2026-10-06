@@ -1,8 +1,4 @@
-import {
-  AppDistribution,
-  LogSeverity,
-  shopifyApp,
-} from '@shopify/shopify-app-react-router/server';
+import { AppDistribution, LogSeverity, shopifyApp } from '@shopify/shopify-app-react-router/server';
 // Runs after the Web API adapter that '@shopify/shopify-app-react-router/server' imports
 // internally, so this one's abstract-runtime registration wins. There's no Workers-specific
 // adapter package for shopify-app-react-router itself (only 'adapters/node' exists, and it's
@@ -19,9 +15,7 @@ import { apiVersion } from './lib/shopify-api-version';
 
 export { apiVersion };
 // Debug locally, where `import.meta.env.DEV` is set. Staging and production stay at info.
-const shopifyLogLevel = import.meta.env.DEV
-  ? LogSeverity.Debug
-  : LogSeverity.Info;
+const shopifyLogLevel = import.meta.env.DEV ? LogSeverity.Debug : LogSeverity.Info;
 const shopifyLogger = getLogger(['shopify']);
 
 const shopify = shopifyApp({

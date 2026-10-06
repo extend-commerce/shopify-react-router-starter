@@ -2,8 +2,8 @@
   "name": "shopify-react-router-starter",
   "private": true,
   "scripts": {
-    "format:check": "prettier --check app/ --ignore-unknown --no-error-on-unmatched-pattern",
-    "format": "prettier --write app/ --ignore-unknown --no-error-on-unmatched-pattern",
+    "format:check": "prettier --check . --ignore-unknown --no-error-on-unmatched-pattern",
+    "format": "prettier --write . --ignore-unknown --no-error-on-unmatched-pattern",
     "typecheck": "tsc -b",
     "build": "react-router build",
     "dev": "node scripts/assert-no-dev-vars.js && shopify app dev",

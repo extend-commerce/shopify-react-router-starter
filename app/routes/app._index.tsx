@@ -14,10 +14,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
 
   return (
     <s-page heading="Shopify React Router Starter">
-      <s-grid
-        gridTemplateColumns="repeat(auto-fill, minmax(260px, 1fr))"
-        gap="base"
-      >
+      <s-grid gridTemplateColumns="repeat(auto-fill, minmax(260px, 1fr))" gap="base">
         {products.map(product => (
           <s-grid-item key={product.id}>
             <ProductCard product={product} />
@@ -55,11 +52,7 @@ function ProductCard({ product }: ProductCardProps) {
       <s-box padding="base">
         <s-stack direction="block" gap="small">
           <s-heading>{product.title}</s-heading>
-          <s-stack
-            direction="inline"
-            gap="small"
-            justifyContent="space-between"
-          >
+          <s-stack direction="inline" gap="small" justifyContent="space-between">
             <s-text type="strong">{price}</s-text>
             <s-badge tone="success">Available</s-badge>
           </s-stack>

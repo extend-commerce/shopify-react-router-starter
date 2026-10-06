@@ -28,7 +28,5 @@ export function PostHogProvider({ children }: PropsWithChildren) {
   }, [IS_PRODUCTION, POSTHOG_API_HOST, POSTHOG_PROJECT_API_KEY]);
 
   if (!hydrated || !IS_PRODUCTION) return <>{children}</>;
-  return (
-    <PostHogProviderReact client={posthog}>{children}</PostHogProviderReact>
-  );
+  return <PostHogProviderReact client={posthog}>{children}</PostHogProviderReact>;
 }
