@@ -3,7 +3,7 @@
 The app deploys to Cloudflare Workers. There are two environments, each with its own wrangler
 config file, Worker name, D1 database, and vars — [`wrangler.staging.jsonc`](../wrangler.staging.jsonc)
 and [`wrangler.production.jsonc`](../wrangler.production.jsonc). (The root
-[`wrangler.jsonc`](../wrangler.jsonc) is a separate, local-dev-only config used by `pnpm start` —
+[`wrangler.jsonc`](../wrangler.jsonc) is a separate, local-dev-only config used by `pnpm dev` —
 it's never deployed.)
 
 ## One-time environment setup

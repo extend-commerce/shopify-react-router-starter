@@ -16,8 +16,14 @@ function getLocalD1Path() {
     return undefined;
   }
 
-  const file = fs.readdirSync(dir).find(isSqliteDB);
-  return file ? path.join(dir, file) : undefined;
+  const files = fs.readdirSync(dir).filter(isSqliteDB);
+  if (files.length > 1) {
+    throw new Error(
+      `Found multiple local D1 databases in ${dir}. Remove stale .sqlite files before running db:studio.`,
+    );
+  }
+
+  return files[0] ? path.join(dir, files[0]) : undefined;
 }
 
 const localD1Path = getLocalD1Path();

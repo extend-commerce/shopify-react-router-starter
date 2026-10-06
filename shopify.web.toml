@@ -1,7 +1,8 @@
 name = "react-router"
 roles = ["frontend", "backend"]
 webhooks_path = "/webhooks/app/uninstalled"
+# Keeps the local app and Cloudflare Local Explorer on a predictable URL.
+port = 3000
 
 [commands]
-predev = "npx drizzle-kit generate"
-dev = "npx wrangler d1 migrations apply DB --local && npm exec react-router dev"
+dev = "pnpm exec wrangler d1 migrations apply DB --local && pnpm exec react-router dev"

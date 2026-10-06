@@ -33,7 +33,7 @@ This guide will walk you through setting up and running the Shopify React Router
    The app persists its session data on Cloudflare D1 (SQLite) via Drizzle. Local development runs
    against a local D1 database through `wrangler`/miniflare rather than a standalone database
    server — there's no Docker container or connection string to configure. Migrations live in
-   `drizzle/` (generate new ones with `pnpm run setup` after changing `app/db/schema.ts`) and are
+   `drizzle/` (generate new ones with `pnpm run db:generate` after changing `app/db/schema.ts`) and are
    applied to the local D1 database with `wrangler d1 migrations apply DB --local`, using the `DB`
    binding configured in the root `wrangler.jsonc`. See [database.md](./database.md) for more, and
    [deployment.md](./deployment.md) for the staging/production wrangler configs.
