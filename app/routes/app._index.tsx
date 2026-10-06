@@ -1,16 +1,16 @@
 import { getProducts } from 'app/server/products.server';
 import { authenticate } from 'app/shopify.server';
-import { useLoaderData, type LoaderFunctionArgs } from 'react-router';
+import { type Route } from './+types/app._index';
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
   const { admin } = await authenticate.admin(request);
   const products = await getProducts(admin);
 
   return { products: products.data?.products.nodes ?? [] };
 };
 
-export default function Index() {
-  const { products } = useLoaderData<typeof loader>();
+export default function Index({ loaderData }: Route.ComponentProps) {
+  const { products } = loaderData;
 
   return (
     <s-page heading="Shopify React Router Starter">
@@ -29,24 +29,7 @@ export default function Index() {
 }
 
 interface ProductCardProps {
-  product: {
-    id: string;
-    title: string;
-    featuredMedia?: {
-      preview?: {
-        image?: {
-          url?: string;
-          altText?: string | null;
-        } | null;
-      } | null;
-    } | null;
-    priceRangeV2: {
-      minVariantPrice: {
-        amount?: string;
-        currencyCode: string;
-      };
-    };
-  };
+  product: Route.ComponentProps['loaderData']['products'][number];
 }
 const PLACEHOLDER_IMAGE_URL = 'https://placehold.co/600x400';
 
@@ -58,7 +41,7 @@ function ProductCard({ product }: ProductCardProps) {
   const price = Intl.NumberFormat(undefined, {
     style: 'currency',
     currency: product.priceRangeV2.minVariantPrice.currencyCode,
-  }).format(Number(product.priceRangeV2.minVariantPrice.amount ?? 0));
+  }).format(Number(product.priceRangeV2.minVariantPrice.amount));
 
   return (
     <s-section padding="none">

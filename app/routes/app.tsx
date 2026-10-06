@@ -1,9 +1,11 @@
 import { AppProvider } from '@shopify/shopify-app-react-router/react';
 import { boundary } from '@shopify/shopify-app-react-router/server';
 import { authenticate } from 'app/shopify.server';
+import { useEffect } from 'react';
 import {
   Outlet,
   useLoaderData,
+  useNavigation,
   useRouteError,
   type HeadersFunction,
   type LoaderFunctionArgs,
@@ -17,17 +19,19 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function App() {
   const { apiKey } = useLoaderData<typeof loader>();
+  const navigation = useNavigation();
+
+  const isNavigating = Boolean(navigation.location);
+
+  useEffect(() => {
+    shopify.loading(isNavigating);
+  }, [isNavigating]);
 
   return (
     <AppProvider apiKey={apiKey}>
       <s-app-nav>
-        <s-link
-          href="/app"
-          // Makes the app name in the admin open /app instead of /, and hides this link from
-          // the menu. Documented for s-app-nav links, but @shopify/polaris-types doesn't type it.
-          // @ts-expect-error -- remove once polaris-types adds `rel` to s-link
-          rel="home"
-        >
+        {/* @ts-expect-error -- remove once polaris-types adds `rel` to s-link */}
+        <s-link href="/app" rel="home">
           Home
         </s-link>
         <s-link href="/app/additional">Additional page</s-link>
