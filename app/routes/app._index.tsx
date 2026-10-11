@@ -6,7 +6,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   const { admin } = await authenticate.admin(request);
   const products = await getProducts(admin);
 
-  return { products: products.data?.products.nodes ?? [] };
+  return { products };
 };
 
 export default function Index({ loaderData }: Route.ComponentProps) {
