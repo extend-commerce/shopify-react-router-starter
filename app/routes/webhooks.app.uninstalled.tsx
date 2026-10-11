@@ -3,11 +3,11 @@ import { sessionTable } from 'app/db/schema';
 import { getLogger } from 'app/lib/logger';
 import { authenticate } from 'app/shopify.server';
 import { eq } from 'drizzle-orm';
-import { type ActionFunctionArgs } from 'react-router';
+import { type Route } from './+types/webhooks.app.uninstalled';
 
 const logger = getLogger(['app', 'webhooks']);
 
-export const action = async ({ request }: ActionFunctionArgs) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   const { shop, session, topic } = await authenticate.webhook(request);
 
   logger.info(`Received webhook`, { topic });

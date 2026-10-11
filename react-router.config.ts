@@ -8,5 +8,7 @@ export default {
     // Builds through Vite's Environment API, which is how @cloudflare/vite-plugin's `ssr` Worker
     // environment gets built. Default in React Router 8.
     v8_viteEnvironmentApi: true,
+    v8_splitRouteModules: true,
+    v8_trailingSlashAwareDataRequests: true,
   },
 } satisfies Config;

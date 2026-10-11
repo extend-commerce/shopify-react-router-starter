@@ -7,11 +7,10 @@ import {
   useLoaderData,
   useNavigation,
   useRouteError,
-  type HeadersFunction,
-  type LoaderFunctionArgs,
 } from 'react-router';
+import { type Route } from './+types/app';
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
   await authenticate.admin(request);
 
   return { apiKey: process.env.SHOPIFY_API_KEY ?? '' };
@@ -46,6 +45,6 @@ export function ErrorBoundary() {
   return boundary.error(useRouteError());
 }
 
-export const headers: HeadersFunction = headersArgs => {
+export const headers: Route.HeadersFunction = headersArgs => {
   return boundary.headers(headersArgs);
 };

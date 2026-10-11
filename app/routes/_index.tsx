@@ -1,8 +1,9 @@
-import { redirect, type LoaderFunctionArgs } from 'react-router';
+import { redirect } from 'react-router';
+import { type Route } from './+types/_index';
 
 // The admin loads the app root (application_url) with ?shop=&host=&id_token=…; forward it to the
 // authenticated /app layout.
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
   const url = new URL(request.url);
 
   if (url.searchParams.get('shop')) {
