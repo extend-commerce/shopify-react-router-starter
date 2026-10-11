@@ -40,6 +40,29 @@ We use [TypeScript](https://www.typescriptlang.org/) for static type checking. T
   pnpm run typecheck
   ```
 
+## Testing
+
+We use [Vitest](https://vitest.dev/) for functional tests. Tests run in Node and sit next to the code they cover, named `*.test.ts`; `app/routes.ts` keeps them out of the route tree.
+
+- **Run the tests:**
+
+  ```bash
+  pnpm run test
+  ```
+
+- **Run them in watch mode:**
+
+  ```bash
+  pnpm run test:watch
+  ```
+
+Test loaders, actions, server helpers and plain functions:
+
+- **Loaders and actions:** call them with a `Request` and assert on what they return or throw.
+- **Server helpers:** pass them a stubbed `admin` (see `app/server/products.server.test.ts`).
+- **Stubs:** build partial objects with [`fromPartial()`](https://github.com/total-typescript/shoehorn) from `@total-typescript/shoehorn` instead of `as` (or `fromAny()` when the data is wrong on purpose).
+- **Route modules that import `app/shopify.server`:** add `vi.mock('app/shopify.server')`, since it opens the D1 binding on import.
+
 ## Links and Navigation
 
 The app only runs embedded in the Shopify admin, so navigation goes through App Bridge and Polaris web components, as in [Shopify's React Router template](https://github.com/Shopify/shopify-app-template-react-router):
