@@ -1,6 +1,7 @@
-import { defineConfig } from 'drizzle-kit';
 import fs from 'node:fs';
 import path from 'node:path';
+
+import { defineConfig } from 'drizzle-kit';
 
 const isSqliteDB = (name: string) => {
   return name.endsWith('.sqlite') && name !== 'metadata.sqlite';

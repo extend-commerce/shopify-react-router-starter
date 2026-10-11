@@ -1,5 +1,6 @@
 import { getProducts } from 'app/server/products.server';
 import { authenticate } from 'app/shopify.server';
+
 import { type Route } from './+types/app._index';
 
 export const loader = async ({ request }: Route.LoaderArgs) => {

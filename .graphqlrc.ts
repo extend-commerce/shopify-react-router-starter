@@ -1,6 +1,8 @@
-import { ApiType, shopifyApiProject } from '@shopify/api-codegen-preset';
 import fs from 'fs';
+
+import { ApiType, shopifyApiProject } from '@shopify/api-codegen-preset';
 import { type IGraphQLConfig } from 'graphql-config';
+
 import { apiVersion } from './app/lib/shopify-api-version';
 
 function getConfig() {

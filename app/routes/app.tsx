@@ -2,12 +2,8 @@ import { AppProvider } from '@shopify/shopify-app-react-router/react';
 import { boundary } from '@shopify/shopify-app-react-router/server';
 import { authenticate } from 'app/shopify.server';
 import { useEffect } from 'react';
-import {
-  Outlet,
-  useLoaderData,
-  useNavigation,
-  useRouteError,
-} from 'react-router';
+import { Outlet, useLoaderData, useNavigation, useRouteError } from 'react-router';
+
 import { type Route } from './+types/app';
 
 export const loader = async ({ request }: Route.LoaderArgs) => {

@@ -1,4 +1,5 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
+
 import { isProduction } from './lib/env';
 import { PostHogProvider } from './lib/posthog/provider';
 

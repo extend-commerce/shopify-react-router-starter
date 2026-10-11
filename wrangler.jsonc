@@ -22,11 +22,6 @@
   // three; vite.config.ts maps HOST or APP_URL onto SHOPIFY_APP_URL. Anything else in
   // the shell stays out.
   "secrets": {
-    "required": [
-      "SHOPIFY_API_KEY",
-      "SHOPIFY_API_SECRET",
-      "SCOPES",
-      "SHOPIFY_APP_URL"
-    ],
+    "required": ["SHOPIFY_API_KEY", "SHOPIFY_API_SECRET", "SCOPES", "SHOPIFY_APP_URL"],
   },
 }

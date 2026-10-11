@@ -1,6 +1,7 @@
 /// <reference types="@cloudflare/workers-types" />
 import { withContext } from '@logtape/logtape';
 import { createRequestHandler, type AppLoadContext } from 'react-router';
+
 import { configureLogging } from '../app/lib/logger/config';
 
 interface Env {

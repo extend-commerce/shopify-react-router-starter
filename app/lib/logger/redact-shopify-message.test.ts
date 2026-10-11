@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { redactShopifyLogMessage } from './redact-shopify-message';
 
 describe('redactShopifyLogMessage', () => {

@@ -1,6 +1,7 @@
 import { isbot } from 'isbot';
 import { renderToReadableStream } from 'react-dom/server';
 import { ServerRouter, type EntryContext } from 'react-router';
+
 import logger from './lib/logger';
 import { addDocumentResponseHeaders } from './shopify.server';
 

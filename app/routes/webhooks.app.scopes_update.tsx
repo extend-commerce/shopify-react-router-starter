@@ -3,6 +3,7 @@ import { sessionTable } from 'app/db/schema';
 import { getLogger } from 'app/lib/logger';
 import { authenticate } from 'app/shopify.server';
 import { eq } from 'drizzle-orm';
+
 import { type Route } from './+types/webhooks.app.scopes_update';
 
 const logger = getLogger(['app', 'webhooks']);

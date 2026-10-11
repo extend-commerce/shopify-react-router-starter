@@ -1,5 +1,6 @@
 import { boundary } from '@shopify/shopify-app-react-router/server';
 import { authenticate } from 'app/shopify.server';
+
 import { type Route } from './+types/auth.$';
 
 export const loader = async ({ request }: Route.LoaderArgs) => {

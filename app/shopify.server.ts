@@ -7,6 +7,7 @@ import { AppDistribution, LogSeverity, shopifyApp } from '@shopify/shopify-app-r
 // an accurate runtime label.
 import '@shopify/shopify-api/adapters/cf-worker';
 import { DrizzleSessionStorageSQLite } from '@shopify/shopify-app-session-storage-drizzle';
+
 import { db } from './db.server';
 import { sessionTable } from './db/schema';
 import { extendLogContext, getLogger } from './lib/logger';

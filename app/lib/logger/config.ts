@@ -1,3 +1,5 @@
+import { AsyncLocalStorage } from 'node:async_hooks';
+
 import {
   configureSync,
   getConsoleSink,
@@ -5,7 +7,7 @@ import {
   type TextFormatter,
 } from '@logtape/logtape';
 import { getPrettyFormatter } from '@logtape/pretty';
-import { AsyncLocalStorage } from 'node:async_hooks';
+
 import { isProduction } from '../env';
 
 // One JSON object per line is what Workers Logs indexes (and exports to OTel destinations);

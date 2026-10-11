@@ -1,4 +1,5 @@
 import { redirect } from 'react-router';
+
 import { type Route } from './+types/_index';
 
 // The admin loads the app root (application_url) with ?shop=&host=&id_token=…; forward it to the
