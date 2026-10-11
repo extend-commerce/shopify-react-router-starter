@@ -42,7 +42,7 @@ We use [TypeScript](https://www.typescriptlang.org/) for static type checking. T
 
 ## Testing
 
-We use [Vitest](https://vitest.dev/) for functional tests and UI snapshot tests. Tests sit next to the code they cover, named `*.test.ts` or `*.test.tsx`; `app/routes.ts` keeps them out of the route tree.
+We use [Vitest](https://vitest.dev/) for functional tests. Tests run in Node and sit next to the code they cover, named `*.test.ts`; `app/routes.ts` keeps them out of the route tree.
 
 - **Run the tests:**
 
@@ -56,18 +56,11 @@ We use [Vitest](https://vitest.dev/) for functional tests and UI snapshot tests.
   pnpm run test:watch
   ```
 
-- **Update snapshots** after an intended UI change:
+Test loaders, actions, server helpers and plain functions:
 
-  ```bash
-  pnpm run test -u
-  ```
-
-`vitest.config.ts` splits tests into two projects by extension:
-
-- **`unit` (`*.test.ts`):** runs in Node. Use it for loaders, actions, server helpers and plain functions. Call a loader with a `Request` and assert on what it returns or throws, and pass server helpers a stubbed `admin` (see `app/server/products.server.test.ts`).
-- **`ui` (`*.test.tsx`):** runs in [happy-dom](https://github.com/capricorn86/happy-dom) with [Testing Library](https://testing-library.com/docs/react-testing-library/intro/). Render a page and match it against a snapshot. A page that reads `loaderData` goes through React Router's [`createRoutesStub`](https://reactrouter.com/api/utils/createRoutesStub) with a stub loader (see `app/routes/app._index.test.tsx`).
-
-Polaris and App Bridge components (`<s-page>`, `<s-link>`, ...) aren't loaded in tests, so they render as plain custom elements with their props as attributes. Snapshots therefore capture the markup the app produces, not how Polaris draws it. Route modules that import `app/shopify.server` need `vi.mock('app/shopify.server')`, since it opens the D1 binding on import. The config pins the locale to `en_US`, so `Intl` formatting is the same on every machine.
+- **Loaders and actions:** call them with a `Request` and assert on what they return or throw (see `app/routes/_index/route.test.ts`).
+- **Server helpers:** pass them a stubbed `admin` (see `app/server/products.server.test.ts`).
+- **Route modules that import `app/shopify.server`:** add `vi.mock('app/shopify.server')`, since it opens the D1 binding on import.
 
 ## Links and Navigation
 
