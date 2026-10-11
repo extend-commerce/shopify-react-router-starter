@@ -4,7 +4,7 @@ This document outlines the development practices and conventions that should be 
 
 ## Code Style and Formatting
 
-We use [Prettier](https://prettier.io/) for automatic code formatting. This ensures a consistent code style across the entire codebase.
+We use [Oxfmt](https://oxc.rs/docs/guide/usage/formatter) for automatic code formatting. This ensures a consistent code style across the entire codebase. It is Prettier-compatible and configured in `.oxfmtrc.json`, which also lists the files it skips (JSON, YAML, TOML, Markdown, GraphQL and generated files).
 
 - **Check for formatting issues:**
 
@@ -18,7 +18,7 @@ We use [Prettier](https://prettier.io/) for automatic code formatting. This ensu
   pnpm run format
   ```
 
-We recommend setting up your editor to format on save.
+We recommend setting up your editor to format on save. In VS Code, the recommended [Oxc extension](https://marketplace.visualstudio.com/items?itemName=oxc.oxc-vscode) is already set as the default formatter in `.vscode/settings.json`.
 
 ## Linting
 

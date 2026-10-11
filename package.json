@@ -2,8 +2,8 @@
   "name": "shopify-react-router-starter",
   "private": true,
   "scripts": {
-    "format:check": "prettier --check . --ignore-unknown --no-error-on-unmatched-pattern",
-    "format": "prettier --write . --ignore-unknown --no-error-on-unmatched-pattern",
+    "format:check": "oxfmt --check --no-error-on-unmatched-pattern",
+    "format": "oxfmt --no-error-on-unmatched-pattern",
     "typecheck": "tsc -b",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -24,7 +24,8 @@
     "lint": "oxlint",
     "commit": "cz",
     "prepare": "node .husky/install.mjs",
-    "postinstall": "graphql-codegen"
+    "postinstall": "graphql-codegen",
+    "router-typegen": "react-router typegen"
   },
   "type": "module",
   "engines": {
@@ -68,9 +69,9 @@
     "drizzle-kit": "^0.31.11",
     "graphql-config": "^5.1.7",
     "husky": "^9.1.7",
+    "oxfmt": "^0.72.0",
     "oxlint": "^1.85.0",
     "oxlint-tsgolint": "^7.0.2002",
-    "prettier": "^3.9.8",
     "typescript": "^6.0.3",
     "vite": "^8.3.1",
     "vitest": "^5.0.3",

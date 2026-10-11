@@ -3,7 +3,6 @@
     "graphql.vscode-graphql",
     "shopify.polaris-for-vscode",
     "shopify.theme-check-vscode",
-    "esbenp.prettier-vscode",
     "oxc.oxc-vscode",
     "vitest.explorer"
   ]
