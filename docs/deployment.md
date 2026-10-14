@@ -57,11 +57,13 @@ against the root `wrangler.jsonc`.
 
 Branch flow: `feat/*`, `fix/*` and `refactor/*` PRs merge into `dev`; `dev` merges into `main`
 through a PR titled `release: vX.Y.Z` (for example `release: v1.2.0`).
-[`branch-flow.yml`](../.github/workflows/branch-flow.yml) checks both on every PR.
+[`branch-flow.yml`](../.github/workflows/branch-flow.yml) checks both on every PR, and
+[`ci.yml`](../.github/workflows/ci.yml) runs lint, format, typecheck and tests. Both must pass
+before a PR can merge into `dev` or `main`.
 
 - **Staging** ([`deploy-staging.yml`](../.github/workflows/deploy-staging.yml)): every push to
-  `dev` runs typecheck, lint and tests, applies staging D1 migrations, deploys the staging Worker,
-  then runs `shopify app deploy --config staging`.
+  `dev` applies staging D1 migrations, deploys the staging Worker, then runs
+  `shopify app deploy --config staging`.
 - **Production** ([`deploy-production.yml`](../.github/workflows/deploy-production.yml)): merging
   the release PR checks the title's version is new and that the promoted `dev` commit deployed to
   staging successfully. After approval on the `production` environment, it applies production D1
@@ -81,7 +83,8 @@ Staging and production are separate Shopify apps: `shopify.app.staging.toml` and
      Shopify app
    - variable `CLOUDFLARE_ACCOUNT_ID`
 2. Add required reviewers to `production`. That approval is the gate before production deploys.
-3. Protect `dev` and `main` (require PRs, require the `Branch flow` check).
+3. Protect `dev` and `main`: require PRs and the `Branch flow`, `Lint`, `Format`, `Typecheck`
+   and `Test` checks.
 
 If a production run fails after the Shopify deploy (for example while tagging), tag the merge
 commit by hand rather than re-running: re-running would try to create the same Shopify version

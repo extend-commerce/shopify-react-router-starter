@@ -10,7 +10,8 @@ permissions: {}
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    name: Branch flow
+    runs-on: blacksmith-2vcpu-ubuntu-2404
     env:
       BASE: ${{ github.base_ref }}
       HEAD: ${{ github.head_ref }}
