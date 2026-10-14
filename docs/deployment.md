@@ -52,3 +52,37 @@ pnpm run db:migrate:production:remote
 
 Staging and production run only as deployed Workers. Day-to-day local development is `pnpm dev`,
 against the root `wrangler.jsonc`.
+
+## Automated deploys (GitHub Actions)
+
+Branch flow: `feat/*`, `fix/*` and `refactor/*` PRs merge into `dev`; `dev` merges into `main`
+through a PR titled `release: vX.Y.Z` (for example `release: v1.2.0`).
+[`branch-flow.yml`](../.github/workflows/branch-flow.yml) checks both on every PR.
+
+- **Staging** ([`deploy-staging.yml`](../.github/workflows/deploy-staging.yml)): every push to
+  `dev` runs typecheck, lint and tests, applies staging D1 migrations, deploys the staging Worker,
+  then runs `shopify app deploy --config staging`.
+- **Production** ([`deploy-production.yml`](../.github/workflows/deploy-production.yml)): merging
+  the release PR checks the title's version is new and that the promoted `dev` commit deployed to
+  staging successfully. After approval on the `production` environment, it applies production D1
+  migrations, deploys the production Worker, runs `shopify app deploy --config shopify.app.toml`,
+  then tags the merge commit with the version.
+
+Migrations run before the new Worker is live, so they must work with the version still running.
+
+### One-time GitHub setup
+
+Staging and production are separate Shopify apps: `shopify.app.staging.toml` and
+`shopify.app.toml`, each with its matching `SHOPIFY_API_KEY` in the wrangler file.
+
+1. Create GitHub environments `staging` and `production`. In each, add:
+   - secret `CLOUDFLARE_API_TOKEN`: a Cloudflare token with Workers Scripts and D1 edit access
+   - secret `SHOPIFY_APP_AUTOMATION_TOKEN`: an app automation token for that environment's
+     Shopify app
+   - variable `CLOUDFLARE_ACCOUNT_ID`
+2. Add required reviewers to `production`. That approval is the gate before production deploys.
+3. Protect `dev` and `main` (require PRs, require the `Branch flow` check).
+
+If a production run fails after the Shopify deploy (for example while tagging), tag the merge
+commit by hand rather than re-running: re-running would try to create the same Shopify version
+again.

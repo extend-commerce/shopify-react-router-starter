@@ -26,8 +26,9 @@ local-only. Nothing in it is uploaded, and a newcomer does not need one to run `
 | `NODE_ENV`                                    | unset on the Worker                                           | plain `var`: `staging` or `production`                    |
 | `POSTHOG_API_HOST`, `POSTHOG_PROJECT_API_KEY` | unset                                                         | optional plain `vars` on production only; blank means off |
 
-`SHOPIFY_API_KEY` in the deployed files is the same client id as `shopify.app.toml`. It is a
-public id (App Bridge sends it to the browser), so it is a `var`, not a secret.
+`SHOPIFY_API_KEY` in each deployed file is that environment's app client id:
+`shopify.app.staging.toml` for staging and `shopify.app.toml` for production. It is a public id
+(App Bridge sends it to the browser), so it is a `var`, not a secret.
 `SHOPIFY_API_SECRET` signs webhook HMACs and OAuth callbacks, so it is never committed.
 
 ## Local development

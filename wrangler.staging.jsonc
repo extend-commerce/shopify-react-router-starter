@@ -38,7 +38,7 @@
       // runs (miniflare never talks to the real database); it must be replaced before the first
       // `--remote` deploy or migration.
       "database_name": "shopify-react-router-starter-staging",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "33c75a41-fdcd-4540-bd1f-f67ad51ab96a",
       "migrations_dir": "./drizzle",
     },
   ],
@@ -51,16 +51,13 @@
   // runtime, so app/shopify.server.ts's `process.env.SHOPIFY_API_SECRET` read needs no code
   // change to pick it up.
   "vars": {
-    // Same value as wrangler.production.jsonc and shopify.app.toml's `client_id` on purpose: this
-    // is one Shopify app registration (one Partner Dashboard entry, one client ID) deployed to two
-    // Cloudflare infra environments, not two separate Shopify apps. If staging is ever split into
-    // its own Shopify app registration, this value — and SCOPES if they diverge — would need its
-    // own client ID here.
+    // Must match shopify.app.staging.toml's `client_id`. Staging and production are separate
+    // Shopify app registrations, so wrangler.production.jsonc has its own client ID.
     "SHOPIFY_API_KEY": "1df55f5cf6c0e80bff62b6563fdcd4cc",
     "SCOPES": "read_products",
     // Replace once staging has a real Workers route/custom domain (see the commented `routes`
     // block below) — must match whatever URL Shopify's app config points at for this environment.
-    "SHOPIFY_APP_URL": "https://shopify-react-router-starter-staging.<your-subdomain>.workers.dev",
+    "SHOPIFY_APP_URL": "https://shopify-react-router-starter-staging.personal-93c.workers.dev",
     // Deliberately not "production": app/shopify.server.ts's `isProduction` check gates the
     // Shopify API client's log level (Info vs Debug). Staging is a deployed-but-pre-production
     // environment where verbose Shopify API debug logging (visible via `wrangler tail`) is more

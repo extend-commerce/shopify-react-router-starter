@@ -1,0 +1,31 @@
+name: Branch flow
+
+# feat/*, fix/* and refactor/* merge into dev; dev merges into main as `release: vX.Y.Z`.
+on:
+  pull_request:
+    branches: [dev, main]
+    types: [opened, reopened, synchronize, edited]
+
+permissions: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      BASE: ${{ github.base_ref }}
+      HEAD: ${{ github.head_ref }}
+      TITLE: ${{ github.event.pull_request.title }}
+    steps:
+      - run: |
+          if [[ "$BASE" == dev ]]; then
+            if [[ ! "$HEAD" =~ ^(feat|fix|refactor)/ ]]; then
+              echo "::error::Only feat/*, fix/* and refactor/* branches merge into dev, got '$HEAD'"
+              exit 1
+            fi
+          elif [[ "$HEAD" != dev ]]; then
+            echo "::error::Only dev merges into main, got '$HEAD'"
+            exit 1
+          elif [[ ! "$TITLE" =~ ^release:\ v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "::error::Release PR title must be 'release: vX.Y.Z', got '$TITLE'"
+            exit 1
+          fi
