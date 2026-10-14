@@ -34,3 +34,11 @@ node_modules
 # Generated types
 /app/types/*
 .scratch/
+
+# Shopify app configurations
+shopify.app.*.toml
+!shopify.app.toml
+!shopify.app.staging.toml
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/

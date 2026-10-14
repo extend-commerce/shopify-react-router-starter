@@ -58,6 +58,7 @@
     "@shopify/admin-api-client": "^2.0.0",
     "@shopify/api-codegen-preset": "^3.0.0",
     "@shopify/app-bridge-types": "^0.7.2",
+    "@shopify/cli": "4.9.3",
     "@shopify/polaris-types": "^1.1.0",
     "@shopify/shopify-api": "^15.0.0",
     "@total-typescript/shoehorn": "^0.1.2",

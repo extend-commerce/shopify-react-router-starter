@@ -1,5 +1,5 @@
 packages:
-  - 'extensions/*'
+  - "extensions/*"
 
 # Only install peer dependencies we declare ourselves. With auto-install on, drizzle-orm's
 # optional driver peers (Prisma, pg) get installed even though this app only uses D1.
@@ -8,10 +8,7 @@ engineStrict: true
 
 # Packages whose install scripts pnpm may run; any other package with one fails the install.
 allowBuilds:
-  '@parcel/watcher': true
-  '@prisma/client': set this to true or false
-  '@prisma/engines': set this to true or false
+  "@parcel/watcher": true
   core-js: false # only prints a funding message
   esbuild: true
-  prisma: set this to true or false
   workerd: true
