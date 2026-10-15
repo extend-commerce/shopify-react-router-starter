@@ -14,7 +14,7 @@
     "deploy": "shopify app deploy",
     "config:use": "shopify app config use",
     "env": "shopify app env",
-    "deploy:staging": "pnpm run build && wrangler preview --name staging --config wrangler.production.jsonc",
+    "deploy:staging": "pnpm run build && wrangler deploy --config wrangler.staging.jsonc",
     "deploy:production": "pnpm run build && wrangler deploy --config wrangler.production.jsonc",
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",

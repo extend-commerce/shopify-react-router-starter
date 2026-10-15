@@ -1,17 +1,10 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  // The deployed Worker. Top-level settings are production (`wrangler deploy`); the `previews`
-  // block is staging, deployed to the same Worker as a Preview named `staging` (`wrangler preview
-  // --name staging`). Previews inherit no bindings or vars, so staging only ever sees what
-  // `previews` declares below — its own D1 database, its own Shopify app.
-  //
-  // `main` and `assets.directory` point at build output, not source: `pnpm run build` bundles
-  // workers/app.ts as React Router's `ssr` environment into `dist/server/index.js` — a real
-  // Worker script with no unresolved virtual modules. `workers/app.ts` itself can't be used as
-  // `main` here: it imports `virtual:react-router/server-build`, which only exists inside a Vite
-  // build/dev server, so plain `wrangler deploy` can't resolve it directly (confirmed by trying).
-  // Run `pnpm run build` first (the `deploy:*` package.json scripts do this for you).
-  "name": "shopify-react-router-starter-production",
+  // Production deploy target — same shape as wrangler.staging.jsonc (see its comments for the
+  // naming convention and why `main`/`assets.directory` point at build output rather than
+  // workers/app.ts source). Keep the two files' bindings/vars structurally in sync; only the
+  // values (name, database, URL, log level) should differ.
+  "name": "shopify-react-router-starter",
   "compatibility_date": "2026-01-01",
   "compatibility_flags": ["nodejs_compat"],
   "main": "dist/server/index.js",
@@ -29,64 +22,37 @@
   "d1_databases": [
     {
       "binding": "DB",
-      // Create with `wrangler d1 create shopify-react-router-starter-production` and paste the returned
+      // Create with `wrangler d1 create shopify-react-router-starter` and paste the returned
       // `database_id` below. A separate database from staging's — never share one across
       // environments.
-      "database_name": "shopify-react-router-starter-production",
-      "database_id": "8da6f064-a950-4e2f-bd3a-d140d747b4f2",
+      "database_name": "shopify-react-router-starter",
+      "database_id": "2fce3cd3-af9b-4f50-838d-e8933ab4a5df",
       "migrations_dir": "./drizzle",
     },
   ],
-  // Vars are plaintext and readable from the dashboard — fine for values that aren't secrets.
-  // SHOPIFY_API_KEY is Shopify's public client ID (sent to the browser by App Bridge), so it is a
-  // plain var. SHOPIFY_API_SECRET (signs/verifies webhook HMACs and OAuth callbacks — a real
-  // secret) is deliberately NOT here: set it once with `wrangler secret put SHOPIFY_API_SECRET
-  // --config wrangler.production.jsonc`. It's layered over `vars` at runtime, so
-  // app/shopify.server.ts's `process.env.SHOPIFY_API_SECRET` read picks it up unchanged.
+  // SHOPIFY_API_SECRET (signs/verifies webhook HMACs and OAuth callbacks — a real secret) is
+  // deliberately NOT a `vars` entry below: set it once with `wrangler secret put
+  // SHOPIFY_API_SECRET --config wrangler.production.jsonc`. See wrangler.staging.jsonc's comment
+  // for why SHOPIFY_API_KEY, by contrast, is safe as a plain var.
   "vars": {
-    // Must match shopify.app.toml's `client_id`.
     "SHOPIFY_API_KEY": "9fcf4c60ff0052c701f4dc59be3034e3",
     "SCOPES": "read_products",
-    // Must match shopify.app.toml's `application_url`. Replace once production has a custom
-    // domain (see the commented `routes` block below).
-    "SHOPIFY_APP_URL": "https://shopify-react-router-starter-production.personal-93c.workers.dev",
+    // Replace once production has a real Workers route/custom domain (see the commented `routes`
+    // block below) — must match whatever URL Shopify's app config points at for production.
+    "SHOPIFY_APP_URL": "https://shopify-react-router-starter.personal-93c.workers.dev",
     "NODE_ENV": "production",
     // Blank leaves PostHog off. Set both to turn it on. The project key is public
     // (the browser receives it). Staging does not carry these keys.
     "POSTHOG_API_HOST": "",
     "POSTHOG_PROJECT_API_KEY": "",
   },
-  // Production deploys to its *.workers.dev subdomain until a custom domain is decided. Then
-  // uncomment and fill in, and update SHOPIFY_APP_URL and shopify.app.toml to match:
+  // No custom route/domain has been decided yet (shopify.app.toml's application_url is still the
+  // "https://example.com" scaffold default) — production deploys to its *.workers.dev subdomain
+  // by default. Once a real domain exists, uncomment and fill in (and drop SHOPIFY_APP_URL's
+  // workers.dev placeholder above to match):
   // "routes": [{ "pattern": "example.com", "custom_domain": true }],
   // Deploy fails while this secret is unset. Set it with `wrangler secret put`.
   "secrets": {
     "required": ["SHOPIFY_API_SECRET"],
-  },
-
-  // Staging. Served at https://staging-<worker name>.<subdomain>.workers.dev, which always runs
-  // the latest `wrangler preview --name staging`. Set its secret with `wrangler preview secret put
-  // SHOPIFY_API_SECRET --name staging --config wrangler.production.jsonc`, using the staging
-  // Shopify app's secret.
-  "previews": {
-    "d1_databases": [
-      {
-        "binding": "DB",
-        // Separate from production. Migrations for it run through wrangler.staging.jsonc, which
-        // must point at this same database.
-        "database_name": "shopify-react-router-starter-staging",
-        "database_id": "33c75a41-fdcd-4540-bd1f-f67ad51ab96a",
-      },
-    ],
-    "vars": {
-      // Must match shopify.app.staging.toml's `client_id`: staging is its own Shopify app.
-      "SHOPIFY_API_KEY": "1df55f5cf6c0e80bff62b6563fdcd4cc",
-      "SCOPES": "read_products",
-      // Must match shopify.app.staging.toml's `application_url`.
-      "SHOPIFY_APP_URL": "https://staging-shopify-react-router-starter-production.personal-93c.workers.dev",
-      // Deliberately not "production": app/shopify.server.ts's `isProduction` check gates the
-      // Shopify API client's log level (Info vs Debug), and staging wants the verbose logs.
-      "NODE_ENV": "staging",
-    },
   },
 }

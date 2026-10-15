@@ -2,7 +2,7 @@
 
 client_id = "9fcf4c60ff0052c701f4dc59be3034e3"
 name = "Extend RR Starter"
-application_url = "https://shopify-react-router-starter-production.personal-93c.workers.dev"
+application_url = "https://shopify-react-router-starter.personal-93c.workers.dev"
 embedded = true
 
 [webhooks]
@@ -13,7 +13,7 @@ api_version = "2026-10"
 scopes = "read_products"
 
 [auth]
-redirect_urls = [ "https://shopify-react-router-starter-production.personal-93c.workers.dev/api/auth" ]
+redirect_urls = [ "https://shopify-react-router-starter.personal-93c.workers.dev/api/auth" ]
 
 [build]
 automatically_update_urls_on_dev = true

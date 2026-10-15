@@ -1,10 +1,9 @@
-# Staging app registration, deployed by .github/workflows/deploy-staging.yml. It points at the
-# `staging` Preview of the production Worker (see wrangler.production.jsonc `previews`).
+# Staging app registration, deployed by .github/workflows/deploy-staging.yml.
 # Production uses shopify.app.toml, which must point at a separate app.
 
 client_id = "1df55f5cf6c0e80bff62b6563fdcd4cc"
 name = "Extend RR Starter - Staging"
-application_url = "https://staging-shopify-react-router-starter-production.personal-93c.workers.dev"
+application_url = "https://shopify-react-router-starter-staging.personal-93c.workers.dev"
 embedded = true
 
 [webhooks]
@@ -14,7 +13,7 @@ api_version = "2026-10"
 scopes = "read_products"
 
 [auth]
-redirect_urls = [ "https://staging-shopify-react-router-starter-production.personal-93c.workers.dev/api/auth" ]
+redirect_urls = [ "https://shopify-react-router-starter-staging.personal-93c.workers.dev/api/auth" ]
 
 [build]
 automatically_update_urls_on_dev = false

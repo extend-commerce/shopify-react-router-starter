@@ -19,14 +19,14 @@ local-only. Nothing in it is uploaded, and a newcomer does not need one to run `
 
 | Key                                           | Local dev                                                     | Deployed                                                  |
 | --------------------------------------------- | ------------------------------------------------------------- | --------------------------------------------------------- |
-| `SHOPIFY_API_KEY`                             | Shopify CLI, required                                         | plain `var` per environment (the app's client id)         |
-| `SHOPIFY_API_SECRET`                          | Shopify CLI, required                                         | secret per environment (see below)                        |
-| `SCOPES`                                      | Shopify CLI, required                                         | plain `var` per environment                               |
-| `SHOPIFY_APP_URL`                             | mapped from `HOST` or `APP_URL` in `vite.config.ts`, required | plain `var` per environment                               |
+| `SHOPIFY_API_KEY`                             | Shopify CLI, required                                         | plain `var` in both wrangler files (the app's client id)  |
+| `SHOPIFY_API_SECRET`                          | Shopify CLI, required                                         | `wrangler secret put`, required at deploy                 |
+| `SCOPES`                                      | Shopify CLI, required                                         | plain `var` in both wrangler files                        |
+| `SHOPIFY_APP_URL`                             | mapped from `HOST` or `APP_URL` in `vite.config.ts`, required | plain `var` in both wrangler files                        |
 | `NODE_ENV`                                    | unset on the Worker                                           | plain `var`: `staging` or `production`                    |
 | `POSTHOG_API_HOST`, `POSTHOG_PROJECT_API_KEY` | unset                                                         | optional plain `vars` on production only; blank means off |
 
-`SHOPIFY_API_KEY` in each environment is that environment's app client id:
+`SHOPIFY_API_KEY` in each deployed file is that environment's app client id:
 `shopify.app.staging.toml` for staging and `shopify.app.toml` for production. It is a public id
 (App Bridge sends it to the browser), so it is a `var`, not a secret.
 `SHOPIFY_API_SECRET` signs webhook HMACs and OAuth callbacks, so it is never committed.
@@ -62,10 +62,10 @@ You do not need them for Shopify credentials.
 
 ## Staging and production
 
-Both environments live in [`wrangler.production.jsonc`](../wrangler.production.jsonc):
-production at the top level, staging in the `previews` block (staging is a Worker Preview of the
-same Worker; see [deployment.md](./deployment.md)). Previews inherit no vars or bindings, so each
-environment declares its own. The root `wrangler.jsonc` is local-only and is never deployed.
+Each environment has its own config file:
+[`wrangler.staging.jsonc`](../wrangler.staging.jsonc) and
+[`wrangler.production.jsonc`](../wrangler.production.jsonc). The root `wrangler.jsonc` is
+local-only and is never deployed.
 
 A value that grants access or signs requests is a secret (the Shopify API secret, private tokens,
 signing keys). Public identifiers and plain configuration are `vars` (the client id, scopes, the
@@ -73,12 +73,12 @@ app URL, `NODE_ENV`, the PostHog host and project key).
 
 ### Plain values: `vars`
 
-Add the key to `vars` (production) and/or `previews.vars` (staging), with that environment's
+Add the key to the `vars` block of each environment that should have it, with that environment's
 value. `vars` are committed. `wrangler deploy` replaces the Worker's vars with the file, so a
 value edited only in the Cloudflare dashboard is lost on the next deploy.
 
-PostHog is production-only. `POSTHOG_API_HOST` and `POSTHOG_PROJECT_API_KEY` live in the
-top-level `vars`. Leave either blank and the app skips `posthog.init`. Staging does
+PostHog is production-only. `POSTHOG_API_HOST` and `POSTHOG_PROJECT_API_KEY` live in
+`wrangler.production.jsonc`. Leave either blank and the app skips `posthog.init`. Staging does
 not carry the keys; its `NODE_ENV` is `staging`, so the provider stays off there too.
 
 ### Secrets: `wrangler secret put`
@@ -86,19 +86,19 @@ not carry the keys; its `NODE_ENV` is `staging`, so the provider stays off there
 Secrets are never written into the wrangler files. Set each one once per environment:
 
 ```bash
-wrangler preview secret put SHOPIFY_API_SECRET --name staging --config wrangler.production.jsonc
+wrangler secret put SHOPIFY_API_SECRET --config wrangler.staging.jsonc
 wrangler secret put SHOPIFY_API_SECRET --config wrangler.production.jsonc
 ```
 
 Wrangler prompts for the value, stores it encrypted, and deploys it without a code deploy.
 Secrets persist across later `wrangler deploy`s. The app reads them through `process.env`.
 
-Production lists `SHOPIFY_API_SECRET` under `secrets.required`. `wrangler deploy` fails while
-that secret is unset.
+Both deployed files list `SHOPIFY_API_SECRET` under `secrets.required`. `wrangler deploy` fails
+while that secret is unset.
 
 ```bash
-wrangler secret list --config wrangler.production.jsonc
-wrangler preview secret delete SHOPIFY_API_SECRET --name staging --config wrangler.production.jsonc
+wrangler secret list --config wrangler.staging.jsonc
+wrangler secret delete SHOPIFY_API_SECRET --config wrangler.staging.jsonc
 ```
 
 Document each new secret in the "One-time environment setup" list in
