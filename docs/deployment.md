@@ -18,7 +18,7 @@ wrangler d1 create shopify-react-router-starter-staging
 wrangler secret put SHOPIFY_API_SECRET --config wrangler.staging.jsonc
 
 # Production
-wrangler d1 create shopify-react-router-starter-production
+wrangler d1 create shopify-react-router-starter
 # paste the returned database_id into wrangler.production.jsonc's d1_databases entry
 wrangler secret put SHOPIFY_API_SECRET --config wrangler.production.jsonc
 ```

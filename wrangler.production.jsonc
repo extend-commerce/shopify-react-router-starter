@@ -4,7 +4,7 @@
   // naming convention and why `main`/`assets.directory` point at build output rather than
   // workers/app.ts source). Keep the two files' bindings/vars structurally in sync; only the
   // values (name, database, URL, log level) should differ.
-  "name": "shopify-react-router-starter-production",
+  "name": "shopify-react-router-starter",
   "compatibility_date": "2026-01-01",
   "compatibility_flags": ["nodejs_compat"],
   "main": "dist/server/index.js",
@@ -22,11 +22,11 @@
   "d1_databases": [
     {
       "binding": "DB",
-      // Create with `wrangler d1 create shopify-react-router-starter-production` and paste the returned
+      // Create with `wrangler d1 create shopify-react-router-starter` and paste the returned
       // `database_id` below. A separate database from staging's — never share one across
       // environments.
-      "database_name": "shopify-react-router-starter-production",
-      "database_id": "8da6f064-a950-4e2f-bd3a-d140d747b4f2",
+      "database_name": "shopify-react-router-starter",
+      "database_id": "2fce3cd3-af9b-4f50-838d-e8933ab4a5df",
       "migrations_dir": "./drizzle",
     },
   ],
@@ -39,7 +39,7 @@
     "SCOPES": "read_products",
     // Replace once production has a real Workers route/custom domain (see the commented `routes`
     // block below) — must match whatever URL Shopify's app config points at for production.
-    "SHOPIFY_APP_URL": "https://shopify-react-router-starter-staging.personal-93c.workers.dev",
+    "SHOPIFY_APP_URL": "https://shopify-react-router-starter.personal-93c.workers.dev",
     "NODE_ENV": "production",
     // Blank leaves PostHog off. Set both to turn it on. The project key is public
     // (the browser receives it). Staging does not carry these keys.
