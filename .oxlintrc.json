@@ -30,7 +30,8 @@
     ".shopify",
     ".react-router",
     ".husky",
-    "./app/types/**/*.d.ts"
+    "./app/types/**/*.d.ts",
+    "worker-configuration.d.ts"
   ],
   "rules": {
     "constructor-super": "error",
