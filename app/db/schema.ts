@@ -22,3 +22,28 @@ export const sessionTable = sqliteTable('session', {
   refreshToken: text('refreshToken'),
   refreshTokenExpires: text('refreshTokenExpires'),
 });
+
+// One row per merchant tenant, separate from `session`: it holds Shop metadata, not credentials,
+// and survives uninstall (see docs/database.md). `session.shop` joins to `myshopifyDomain` by
+// value; there are deliberately no foreign keys or relations.
+export const shopTable = sqliteTable('shop', {
+  // The numeric Shopify Shop ID (from its GID), always supplied by the app - never generated.
+  id: integer('id').primaryKey(),
+  myshopifyDomain: text('myshopifyDomain').notNull().unique(),
+  name: text('name').notNull(),
+  email: text('email').notNull(),
+  contactEmail: text('contactEmail').notNull(),
+  shopOwnerName: text('shopOwnerName').notNull(),
+  primaryDomain: text('primaryDomain').notNull(),
+  countryCode: text('countryCode'),
+  // The merchant's Shopify subscription (display name), not an app billing plan.
+  shopifyPlan: text('shopifyPlan').notNull(),
+  shopifyPlus: integer('shopifyPlus', { mode: 'boolean' }).notNull(),
+  partnerDevelopment: integer('partnerDevelopment', { mode: 'boolean' }).notNull(),
+  // Start of the current install period; a reinstall moves it forward.
+  installedAt: integer('installedAt', { mode: 'timestamp_ms' }).notNull(),
+  // Null means installed.
+  uninstalledAt: integer('uninstalledAt', { mode: 'timestamp_ms' }),
+  createdAt: integer('createdAt', { mode: 'timestamp_ms' }).notNull(),
+  updatedAt: integer('updatedAt', { mode: 'timestamp_ms' }).notNull(),
+});

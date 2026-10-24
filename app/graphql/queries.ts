@@ -31,3 +31,26 @@ query GetProducts($first: Int!) {
   }
 }
 `;
+
+export const GET_SHOP_SNAPSHOT = `#graphql
+query GetShopSnapshot {
+  shop {
+    id
+    name
+    email
+    contactEmail
+    shopOwnerName
+    primaryDomain {
+      host
+    }
+    billingAddress {
+      countryCodeV2
+    }
+    plan {
+      publicDisplayName
+      shopifyPlus
+      partnerDevelopment
+    }
+  }
+}
+`;

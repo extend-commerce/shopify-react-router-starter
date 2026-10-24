@@ -2,7 +2,7 @@
 
 This document provides an overview of the database used in the Shopify React Router Starter.
 
-The app persists its session data on [Cloudflare D1](https://developers.cloudflare.com/d1/)
+The app persists its session and Shop data on [Cloudflare D1](https://developers.cloudflare.com/d1/)
 (SQLite) via [Drizzle ORM](https://orm.drizzle.team/). There's no standalone database server or
 connection string — the D1 database is a binding (`DB`) configured per environment in a wrangler
 config file (see [deployment.md](./deployment.md)).
@@ -10,6 +10,50 @@ config file (see [deployment.md](./deployment.md)).
 ## Database Schema
 
 The database schema is defined in the `app/db/schema.ts` file.
+
+| Table     | Holds                                                                         |
+| --------- | ----------------------------------------------------------------------------- |
+| `session` | OAuth credentials, managed by the Shopify session-storage adapter. Don't edit. |
+| `shop`    | The merchant tenant's metadata, one row per Shop.                             |
+
+### Shop vs. Session
+
+A Shop is the merchant tenant; a Session holds its credentials. Keep them apart: Shop metadata
+survives an uninstall, Sessions do not need to.
+
+- **No foreign keys or Drizzle relations.** `session.shop` and `shop.myshopifyDomain` hold the same
+  `*.myshopify.com` domain, and queries join on that value.
+- **`shop.id`** is the numeric Shopify Shop ID, parsed from the Admin GraphQL GID. It is always
+  supplied by the app, never generated, and is the upsert conflict target.
+- **`shop.myshopifyDomain`** is unique and is the lookup key for every data-access function
+  (`getShop`, `ensureShop`), so callers never handle the numeric ID.
+- **Metadata** (`name`, `email`, `contactEmail`, `shopOwnerName`, `primaryDomain`, `countryCode`,
+  `shopifyPlan`, `shopifyPlus`, `partnerDevelopment`) is a snapshot of the Admin GraphQL `shop`
+  query. `shopifyPlan` is the merchant's Shopify Plan, not an app billing plan. Code-like values
+  are plain text, not enums.
+- **Timestamps** (`installedAt`, `uninstalledAt`, `createdAt`, `updatedAt`) are Drizzle
+  `timestamp_ms` integers (milliseconds since the epoch, `Date` in TypeScript); booleans are
+  integers in boolean mode. A null `uninstalledAt` means installed, so there is no status column.
+
+### Install and reinstall
+
+Persistence functions live in `app/server/shop.server.ts`, take the database handle (`Database`
+from `app/db.server.ts`) as their first argument and are documented in JSDoc; they don't log.
+
+- A **first visit** (or the first one after adopting this table: there is no backfill) inserts the
+  Shop from a fresh Admin GraphQL snapshot, setting `createdAt` and `installedAt` to now.
+- A **Reinstall** (an admin visit to an uninstalled Shop) refreshes the metadata, clears
+  `uninstalledAt`, advances `installedAt` and keeps `createdAt`.
+- An **installed Shop** costs one indexed lookup per admin request and no further GraphQL call.
+- Two requests initializing the same Shop at once are fine: the upsert refreshes metadata but only
+  moves `installedAt` while the stored row is still uninstalled.
+
+### Authenticated admin requests always have a Shop
+
+Only the admin authentication wrapper in `app/shopify.server.ts` creates or reinstalls a Shop. After
+the library authenticates, it ensures the installed Shop row exists and returns it as `shop`. A
+failed snapshot or write fails the request, so a loader or action never sees a missing Shop. See
+[development-practices.md](./development-practices.md#authenticating-admin-requests).
 
 ## Migrations
 
