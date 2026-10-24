@@ -1,22 +1,29 @@
 import { db } from 'app/db.server';
-import { sessionTable } from 'app/db/schema';
 import { getLogger } from 'app/lib/logger';
+import { uninstallShop } from 'app/server/shop.server';
 import { authenticate } from 'app/shopify.server';
-import { eq } from 'drizzle-orm';
 
 import { type Route } from './+types/webhooks.app.uninstalled';
 
 const logger = getLogger(['app', 'webhooks']);
 
 export const action = async ({ request }: Route.ActionArgs) => {
-  const { shop, session, topic } = await authenticate.webhook(request);
-
+  const { shop, topic, triggeredAt } = await authenticate.webhook(request);
   logger.info(`Received webhook`, { topic });
 
-  // Webhook requests can trigger multiple times and after an app has already been uninstalled.
-  // If this webhook already ran, the session may have been deleted previously.
-  if (session) {
-    await db.delete(sessionTable).where(eq(sessionTable.shop, shop));
+  // The Session is deliberately not consulted: cleanup is keyed by domain, so it also runs when
+  // authentication produced no Session (the token is gone after uninstall).
+  const triggered = triggeredAt ? new Date(triggeredAt) : undefined;
+  const eventTime = triggered && !Number.isNaN(triggered.getTime()) ? triggered : new Date();
+
+  // Errors propagate on purpose: Shopify retries a failed delivery.
+  const outcome = await uninstallShop(db, shop, eventTime);
+  if (outcome === 'uninstalled') {
+    logger.debug(`Uninstalled Shop`, { topic, outcome });
+  } else if (outcome === 'stale') {
+    logger.info(`Ignored uninstall from an earlier install period`, { topic, outcome });
+  } else {
+    logger.info(`Deleted Sessions for a Shop with no record`, { topic, outcome });
   }
 
   return new Response();

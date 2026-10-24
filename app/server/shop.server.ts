@@ -132,6 +132,87 @@ export async function ensureShop(
 }
 
 /**
+ * Refreshes the metadata of an installed Shop from a fresh Admin GraphQL snapshot, for the
+ * `shop/update` webhook.
+ *
+ * It only updates an existing row whose `uninstalledAt` is null, and never inserts one or revives
+ * an uninstalled Shop, so a delayed update cannot undo an uninstall. Without an installed row it
+ * returns before fetching anything. The write repeats the installed check in SQL, so a Shop
+ * uninstalled between the lookup and the write is also reported as `not_installed`. Does not log.
+ *
+ * @param db The database handle.
+ * @param domain The `*.myshopify.com` domain, as in the webhook context's `shop`.
+ * @param admin The Admin GraphQL client of the webhook context.
+ * @returns `refreshed` when the row was updated; `not_installed` when there is no installed row.
+ * @throws If the snapshot cannot be fetched (the Error carries any GraphQL errors) or the database
+ * fails. Callers should let it propagate so Shopify retries the delivery.
+ */
+export async function refreshShop(
+  db: Database,
+  domain: string,
+  admin: AdminApiContextWithoutRest,
+): Promise<'refreshed' | 'not_installed'> {
+  const existing = await getShop(db, domain);
+  if (!existing || existing.uninstalledAt) return 'not_installed';
+
+  // The Shop ID never changes, so it is not part of the update.
+  const { id: _id, ...metadata } = await fetchShopSnapshot(admin);
+  const updated = await db
+    .update(shopTable)
+    .set({ ...metadata, updatedAt: new Date() })
+    .where(and(eq(shopTable.myshopifyDomain, domain), isNull(shopTable.uninstalledAt)))
+    .returning({ id: shopTable.id });
+
+  return updated.length > 0 ? 'refreshed' : 'not_installed';
+}
+
+/**
+ * Records an uninstall and deletes the domain's Sessions, for the `app/uninstalled` webhook. It
+ * works from the domain alone, so it does not need an authenticated Session.
+ *
+ * - **Shop exists, `triggeredAt` is strictly later than `installedAt`:** in one D1 batch, sets
+ *   `uninstalledAt` to `triggeredAt` and `updatedAt` to now, and deletes every Session with this
+ *   domain. Metadata is kept as is. Repeating the same event gives the same result.
+ * - **Shop exists, `triggeredAt` is equal or older:** the event belongs to an earlier install
+ *   period, so nothing is changed (the current Shop and Sessions stay) and no Admin API call is made.
+ * - **No Shop row** (a pre-feature install, or after redaction): still deletes the Sessions.
+ *
+ * Accepted race: token exchange can store a Session just before the admin wrapper reinstalls the
+ * Shop, and a cleanup running in that window deletes it. The next admin request self-heals, so
+ * there is no locking. Does not log.
+ *
+ * @param db The database handle.
+ * @param domain The `*.myshopify.com` domain, as in the webhook context's `shop`.
+ * @param triggeredAt When Shopify triggered the event (`X-Shopify-Triggered-At`).
+ * @returns `uninstalled` when the Shop was marked uninstalled; `stale` when the event was ignored;
+ * `missing` when there was no Shop row.
+ * @throws On a database error. Callers should let it propagate so Shopify retries the delivery.
+ */
+export async function uninstallShop(
+  db: Database,
+  domain: string,
+  triggeredAt: Date,
+): Promise<'uninstalled' | 'stale' | 'missing'> {
+  const existing = await getShop(db, domain);
+
+  if (!existing) {
+    await db.delete(sessionTable).where(eq(sessionTable.shop, domain));
+    return 'missing';
+  }
+
+  if (triggeredAt.getTime() <= existing.installedAt.getTime()) return 'stale';
+
+  await db.batch([
+    db
+      .update(shopTable)
+      .set({ uninstalledAt: triggeredAt, updatedAt: new Date() })
+      .where(eq(shopTable.myshopifyDomain, domain)),
+    db.delete(sessionTable).where(eq(sessionTable.shop, domain)),
+  ]);
+  return 'uninstalled';
+}
+
+/**
  * Erases an uninstalled (or already missing) Shop and its Sessions after Shopify's `shop/redact`
  * request. It is the starter's only Shop erasure and knows nothing about GDPR Requests: those rows,
  * including the one being processed, are left intact for the caller to complete.

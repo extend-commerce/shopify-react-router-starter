@@ -8,6 +8,19 @@ embedded = true
 [webhooks]
 api_version = "2026-10"
 
+  # Shop lifecycle webhooks. Each topic has its own route in app/routes.
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
+
+  [[webhooks.subscriptions]]
+  topics = [ "shop/update" ]
+  uri = "/webhooks/shop/update"
+
   # Mandatory compliance webhooks. Each topic has its own route in app/routes.
   [[webhooks.subscriptions]]
   compliance_topics = [ "customers/data_request" ]
