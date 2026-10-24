@@ -8,4 +8,5 @@ It is built with React Router, TypeScript, and Vite, and uses Drizzle ORM for da
 - [Development Practices](./development-practices.md)
 - [Environment Variables](./environment-variables.md)
 - [Database](./database.md)
+- [Webhooks](./webhooks.md)
 - [Deployment](./deployment.md)
