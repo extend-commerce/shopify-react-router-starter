@@ -7,6 +7,6 @@ It is built with React Router, TypeScript, and Vite, and uses Drizzle ORM for da
 - [Getting Started](./getting-started.md)
 - [Development Practices](./development-practices.md)
 - [Environment Variables](./environment-variables.md)
-- [Database](./database.md): the `session` and `shop` tables and the install lifecycle
-- [Webhooks](./webhooks.md)
+- [Database](./database.md): the `session`, `shop` and `gdpr_request` tables and the install lifecycle
+- [Webhooks](./webhooks.md): subscriptions, Shop lifecycle topics and mandatory compliance (GDPR) handling
 - [Deployment](./deployment.md)
