@@ -8,6 +8,13 @@
       "when": 1790152274463,
       "tag": "0000_first_grey_gargoyle",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1792854481472,
+      "tag": "0001_minor_spacker_dave",
+      "breakpoints": true
     }
   ]
 }
