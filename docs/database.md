@@ -51,6 +51,18 @@ from `app/db.server.ts`) as their first argument and are documented in JSDoc; th
 - Two requests initializing the same Shop at once are fine: the upsert refreshes metadata but only
   moves `installedAt` while the stored row is still uninstalled.
 
+### Update and uninstall
+
+Webhooks keep the row accurate after install; see [webhooks.md](./webhooks.md#shop-lifecycle-webhooks)
+for the flows.
+
+- **`refreshShop`** (`shop/update`) refreshes the metadata of an **installed** Shop from a fresh
+  snapshot. It never inserts a row or revives an uninstalled one.
+- **`uninstallShop`** (`app/uninstalled`) acts on an existing Shop only when the event time is
+  strictly later than `installedAt`; otherwise the event is `stale` and ignored. When it applies, one
+  batch sets `uninstalledAt` (event time) and `updatedAt` and deletes the domain's Sessions. Metadata
+  is kept, so the Shop row survives uninstall. With no Shop row it still deletes the Sessions.
+
 ### Authenticated admin requests always have a Shop
 
 Only the admin authentication wrapper in `app/shopify.server.ts` creates or reinstalls a Shop. After

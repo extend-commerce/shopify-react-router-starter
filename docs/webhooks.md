@@ -1,6 +1,6 @@
 # Webhooks
 
-How the starter authenticates webhook deliveries. Route-by-route behavior, subscriptions and the install and compliance flows are added to this guide as they land.
+How the starter authenticates and handles webhook deliveries: subscriptions, the Shop lifecycle topics and the mandatory compliance topics.
 
 ## Subscriptions and routes
 
@@ -34,6 +34,63 @@ Handlers for the allowlisted topics already have to work without a Session, so t
 ### Retiring the fallback
 
 `app/lib/webhook-auth-fallback.canary.test.ts` runs the real library against an expired stored Session whose refresh fails, and asserts that it still throws a `500`. When a dependency upgrade makes that test fail, the library has fixed the problem. Remove the fallback, the canary and this section (the `TODO` in the fallback links the upstream issue and fix), then check how the library behaves for each topic. Do not weaken the canary's assertion to make it pass.
+
+## Shop lifecycle webhooks
+
+Three topics keep the Shop (see [database.md](./database.md#shop-vs-session)) and the Sessions
+accurate. Each has one route and a subscription in both TOML files. Persistence functions live in
+`app/server/shop.server.ts`; the routes log their outcome under `app.webhooks`.
+
+| Topic               | Route                               | Action                                                         |
+| ------------------- | ----------------------------------- | -------------------------------------------------------------- |
+| `shop/update`       | `webhooks.shop.update.tsx`          | `refreshShop`: refresh metadata of an installed Shop           |
+| `app/uninstalled`   | `webhooks.app.uninstalled.tsx`      | `uninstallShop`: mark the Shop uninstalled, delete its Sessions |
+| `app/scopes_update` | `webhooks.app.scopes_update.tsx`    | Store the new scopes on the Session; never writes Shop data    |
+
+### Shop update
+
+1. If the webhook context has no `admin` (no stored Session), the route returns 200 and does
+   nothing.
+2. Otherwise `refreshShop` fetches a fresh Admin GraphQL snapshot (the webhook's REST-shaped
+   payload is not used) and updates the row **only if it exists and is installed**. It never
+   inserts a row or revives an uninstalled Shop, so a delayed update cannot undo an uninstall. The
+   outcome is `refreshed` or `not_installed` (logged at `info`).
+3. Snapshot and write errors propagate, so Shopify retries the delivery.
+
+### Uninstall
+
+`uninstallShop` works from the shop domain and the event's triggered-at time, never from a
+Session, so it runs even when authentication produced none (see the fallback above).
+
+- **Shop row exists and `triggeredAt` is strictly later than `installedAt`:** one D1 batch sets
+  `uninstalledAt` to the event time and `updatedAt` to now, and deletes every Session for the
+  domain. The Shop row and its metadata are kept. Repeating the delivery gives the same result.
+  Outcome `uninstalled`.
+- **`triggeredAt` equal to or older than `installedAt`:** the event belongs to an earlier install
+  period, e.g. a delayed delivery after a Reinstall. Nothing changes, so the current Shop and
+  Sessions are preserved, and there is no Admin API probe. Outcome `stale` (logged at `info`).
+- **No Shop row** (an install that predates the `shop` table, or a redacted Shop): the Sessions are
+  still deleted. Outcome `missing` (logged at `info`).
+
+The route falls back to the receipt time if `X-Shopify-Triggered-At` is absent or unparseable.
+
+Accepted race: token exchange can store a new Session just before the admin wrapper establishes the
+reinstalled Shop, and an uninstall cleanup running in that window deletes it. The next admin request
+authenticates again and recovers. There are no locks or recovery mechanism.
+
+### Scopes update
+
+Unchanged: the route stores the new scope list on the Session when there is one. It does not touch
+the Shop.
+
+### Flows
+
+- **Install:** the first admin request inserts the Shop (`createdAt` and `installedAt` = now).
+- **Uninstall:** `app/uninstalled` marks the Shop uninstalled and deletes its Sessions. The Shop row
+  stays; `shop/update` events for it are acknowledged without effect.
+- **Reinstall:** the next admin request sees an uninstalled Shop, takes a fresh snapshot, clears
+  `uninstalledAt` and advances `installedAt`. An `app/uninstalled` still in flight from the earlier
+  install period is `stale` and leaves the new installation alone.
 
 ## Mandatory compliance webhooks
 
