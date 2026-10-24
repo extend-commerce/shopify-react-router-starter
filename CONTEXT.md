@@ -16,6 +16,10 @@ _Avoid_: re-auth, second install
 The merchant's Shopify subscription (for example Basic or Shopify Plus), recorded on the Shop. It is not an app billing plan.
 _Avoid_: plan, subscription, billing plan
 
+**Shop redaction**:
+Shopify's `shop/redact` request, sent after an uninstall, to erase the Shop's data. It hard-deletes the uninstalled (or already missing) Shop and its Sessions, skips a Shop that has reinstalled, and keeps GDPR Requests. A later install creates a fresh Shop.
+_Avoid_: shop delete, shop wipe
+
 **Session**:
 The offline OAuth session for one shop. Its id is `offline_<shop>`.
 _Avoid_: access token, staff user, online session
