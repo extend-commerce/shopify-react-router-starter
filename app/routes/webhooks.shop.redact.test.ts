@@ -6,7 +6,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { action } from './webhooks.shop.redact';
 
+const { logger } = vi.hoisted(() => ({ logger: { info: vi.fn() } }));
+
 vi.mock('app/db.server', () => ({ db: { name: 'database' } }));
+vi.mock('app/lib/logger', () => ({ getLogger: () => logger }));
 vi.mock('app/shopify.server', () => ({ authenticate: { webhook: vi.fn() } }));
 vi.mock('app/server/gdpr-request.server', () => ({
   recordGdprRequest: vi.fn(),
@@ -50,6 +53,10 @@ describe('shop/redact webhook', () => {
       'webhook-1',
       'processed',
     );
+    expect(logger.info).toHaveBeenCalledWith(
+      'Redacted Shop',
+      expect.objectContaining({ outcome: 'redacted' }),
+    );
   });
 
   it('completes the request as skipped when the Shop is installed', async () => {
@@ -60,6 +67,11 @@ describe('shop/redact webhook', () => {
 
     expect(response.status).toBe(200);
     expect(completeGdprRequest).toHaveBeenCalledWith({ name: 'database' }, 'webhook-1', 'skipped');
+    expect(logger.info).toHaveBeenCalledWith(
+      'Skipped redaction of an installed Shop',
+      expect.objectContaining({ outcome: 'skipped' }),
+    );
+    expect(logger.info).not.toHaveBeenCalledWith('Redacted Shop', expect.anything());
   });
 
   it('continues a request that is still pending from an earlier delivery', async () => {

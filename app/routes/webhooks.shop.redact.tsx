@@ -25,7 +25,15 @@ export const action = async ({ request }: Route.ActionArgs) => {
   // The GDPR Request rows are kept as evidence. Completing is a separate write: if it fails after
   // the deletes, the request stays `pending` and the redelivery repeats the deletes harmlessly.
   const outcome = await redactShop(db, webhook.shop);
-  logger.info(`Redacted shop`, { topic: webhook.topic, shop: webhook.shop, outcome });
+  if (outcome === 'redacted') {
+    logger.info(`Redacted Shop`, { topic: webhook.topic, shop: webhook.shop, outcome });
+  } else {
+    logger.info(`Skipped redaction of an installed Shop`, {
+      topic: webhook.topic,
+      shop: webhook.shop,
+      outcome,
+    });
+  }
 
   await completeGdprRequest(db, gdprRequest.id, outcome === 'redacted' ? 'processed' : 'skipped');
 

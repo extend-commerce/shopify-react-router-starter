@@ -1,5 +1,6 @@
 import { type Database } from 'app/db.server';
 import { gdprRequestTable } from 'app/db/schema';
+import { parseTriggeredAt } from 'app/lib/triggered-at';
 import { eq } from 'drizzle-orm';
 
 /** A persisted mandatory compliance-webhook request. */
@@ -9,7 +10,7 @@ export type GdprRequest = typeof gdprRequestTable.$inferSelect;
  * The parts of an authenticated webhook context that `recordGdprRequest` reads. The context
  * returned by `authenticate.webhook` satisfies this.
  */
-export interface GdprWebhook {
+export interface GdprRequestWebhook {
   /** `X-Shopify-Webhook-Id`: unique per delivery attempt group, and the deduplication key. */
   webhookId: string;
   /** Normalized topic as `authenticate.webhook` returns it, e.g. `CUSTOMERS_REDACT`. */
@@ -45,9 +46,17 @@ function scrubPayload(payload: Record<string, unknown>) {
   return { ...payload, customer };
 }
 
-function parseTriggeredAt(triggeredAt: string | undefined, fallback: Date) {
-  const parsed = triggeredAt ? new Date(triggeredAt) : fallback;
-  return Number.isNaN(parsed.getTime()) ? fallback : parsed;
+// The payload comes from an authenticated webhook but is typed loosely; storing `NaN` or the string
+// "undefined" would silently corrupt the audit trail, so reject a malformed identity instead.
+function parseShopIdentity(payload: Record<string, unknown>) {
+  const { shop_id: shopId, shop_domain: shopDomain } = payload;
+  if (typeof shopId !== 'number' || !Number.isInteger(shopId)) {
+    throw new Error(`Invalid shop_id in compliance payload: ${String(shopId)}`);
+  }
+  if (typeof shopDomain !== 'string' || shopDomain === '') {
+    throw new Error(`Invalid shop_domain in compliance payload: ${String(shopDomain)}`);
+  }
+  return { shopId, shopDomain };
 }
 
 /**
@@ -58,22 +67,28 @@ function parseTriggeredAt(triggeredAt: string | undefined, fallback: Date) {
  * @returns The `pending` row to process: the newly inserted one, or an existing one left pending
  * by an earlier failed delivery. `null` when the request already reached a terminal status
  * (`processed` or `skipped`), meaning there is nothing left to do.
- * @throws If the topic is not one of the three mandatory compliance topics, or on a database error.
+ * @throws If the topic is not one of the three mandatory compliance topics, if the payload's
+ * `shop_id` is not an integer or its `shop_domain` is not a non-empty string, or on a database
+ * error.
  */
 export async function recordGdprRequest(
   database: Database,
-  webhook: GdprWebhook,
+  webhook: GdprRequestWebhook,
 ): Promise<GdprRequest | null> {
+  const topic = toWireTopic(webhook.topic);
+  const { shopId, shopDomain } = parseShopIdentity(webhook.payload);
   const now = new Date();
   const insertedRows = await database
     .insert(gdprRequestTable)
     .values({
       id: webhook.webhookId,
-      topic: toWireTopic(webhook.topic),
-      shopId: Number(webhook.payload.shop_id),
-      shopDomain: String(webhook.payload.shop_domain),
+      topic,
+      shopId,
+      shopDomain,
       payload: scrubPayload(webhook.payload),
-      triggeredAt: parseTriggeredAt(webhook.triggeredAt, now),
+      // `triggeredAt` is a required column and an audit field, not a guard, so receipt time is an
+      // acceptable stand-in when the header is absent or unparseable.
+      triggeredAt: parseTriggeredAt(webhook.triggeredAt) ?? now,
       createdAt: now,
     })
     .onConflictDoNothing()
