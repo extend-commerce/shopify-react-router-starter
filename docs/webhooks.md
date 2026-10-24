@@ -102,6 +102,7 @@ scrub policy and retention) before anything is done for it.
 | ------------------------- | ---------------------------------------- | --------------------------------- |
 | `customers/data_request`  | `webhooks.customers.data_request.tsx`    | Documented no-op, then `processed` |
 | `customers/redact`        | `webhooks.customers.redact.tsx`          | Documented no-op, then `processed` |
+| `shop/redact`             | `webhooks.shop.redact.tsx`               | `redactShop`, then `processed` or `skipped` |
 
 ### Customer topics
 
@@ -118,6 +119,39 @@ request is auditable:
    `completeGdprRequest(..., 'processed')`, which sets the status and `processedAt` together.
 
 Neither route depends on a Shop record existing; both work for any shop domain.
+
+### Shop redaction (`shop/redact`)
+
+Shopify sends `shop/redact` some time after an uninstall. The route
+(`app/routes/webhooks.shop.redact.tsx`) sequences the same lifecycle explicitly, with no callback
+abstraction:
+
+1. Authenticate the webhook, then `recordGdprRequest`. A `null` result is a terminal duplicate:
+   return 200 and do nothing else. A still-`pending` row continues.
+2. `redactShop(db, webhook.shop)` returns `redacted` or `skipped`.
+3. `completeGdprRequest` maps `redacted` to `processed` and `skipped` to `skipped`. The status
+   flip is a separate write, not part of the deletion batch.
+
+| `redactShop` outcome | When                                                      | Request status |
+| -------------------- | --------------------------------------------------------- | -------------- |
+| `skipped`            | The Shop is installed (it reinstalled since the uninstall) | `skipped`      |
+| `redacted`           | The Shop is uninstalled or missing: Sessions and Shop deleted | `processed`    |
+
+- **Missing Shop:** still `redacted`. The Sessions are deleted and the Shop delete matches
+  nothing, so cleanup is idempotent and also covers Shops that predate the `shop` table.
+- **Reinstall protection:** the deletes are guarded by installed-Shop predicates, so a reinstall
+  between the initial read and the batch leaves the new Shop and Sessions intact (the call may
+  then still report `redacted`). Details in
+  [database.md](./database.md#shop-redaction).
+- **GDPR evidence is preserved:** no `gdpr_request` row is deleted, including the current one.
+- **Retry:** if the deletion throws, the route does not complete the request and the failure
+  propagates, so it stays `pending` and Shopify redelivers. If the deletion succeeds but
+  completion fails, the request also stays `pending`; the redelivery repeats the deletes against
+  the now missing Shop (no-ops) and completes it as `processed`. No queue, lock or tombstone is
+  involved.
+- **Fresh Shop afterwards:** a later install after redaction creates a new Shop row.
+- **Extension point:** forks with Shop-scoped tables add their deletes to `redactShop`, with the
+  same installed-Shop guard.
 
 ### Retries
 

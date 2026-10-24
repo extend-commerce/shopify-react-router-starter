@@ -3,7 +3,7 @@ import { sessionTable, shopTable } from 'app/db/schema';
 import { GET_SHOP_SNAPSHOT } from 'app/graphql/queries';
 import { type AdminApiContextWithoutRest } from 'app/shopify.server';
 import { type GetShopSnapshotQuery } from 'app/types/admin.generated';
-import { and, eq, isNull, sql } from 'drizzle-orm';
+import { and, eq, isNotNull, isNull, notExists, sql } from 'drizzle-orm';
 
 /** A row of the `shop` table: the merchant tenant, identified by its myshopify domain. */
 export type Shop = typeof shopTable.$inferSelect;
@@ -210,4 +210,57 @@ export async function uninstallShop(
     db.delete(sessionTable).where(eq(sessionTable.shop, domain)),
   ]);
   return 'uninstalled';
+}
+
+/**
+ * Erases an uninstalled (or already missing) Shop and its Sessions after Shopify's `shop/redact`
+ * request. It is the starter's only Shop erasure and knows nothing about GDPR Requests: those rows,
+ * including the one being processed, are left intact for the caller to complete.
+ *
+ * Guards:
+ *
+ * - An installed Shop (`uninstalledAt` is null) at the initial read returns `skipped` and deletes
+ *   nothing: the redaction belongs to an earlier installation that has since been replaced.
+ * - Otherwise one D1 batch deletes the Sessions with `session.shop` equal to the domain, but only
+ *   while no installed Shop with that domain exists when the statement runs, and deletes the Shop
+ *   row, but only while it is uninstalled. These predicates protect a Shop that reinstalls between
+ *   the initial read and the batch. If that happens every delete matches nothing and the call
+ *   still returns `redacted`; the caller completes the request as processed.
+ * - A missing Shop is a valid case: the Sessions are still deleted and deleting nothing succeeds,
+ *   so a retry after a failure that came later is idempotent.
+ *
+ * The call is safe to repeat. A later install after redaction creates a fresh Shop row. Does not
+ * log.
+ *
+ * EXTENSION POINT: if your app adds tables keyed by Shop, delete from them as extra statements in
+ * the batch below, with the same installed-Shop guard as the Session delete. Without it, a
+ * reinstalled Shop would lose its current data to a redaction from an earlier uninstall.
+ *
+ * Accepted narrow race: token exchange can store a Session just before the admin authentication
+ * wrapper establishes the reinstalled Shop row. A redaction in that window removes that Session,
+ * and the next admin request authenticates again and recovers.
+ *
+ * @param db The database handle.
+ * @param domain The `*.myshopify.com` domain from the webhook.
+ * @returns `redacted` when the deletion batch ran, `skipped` when the Shop is installed.
+ * @throws If the database query or batch fails. The batch applies atomically, and the caller must
+ * not complete the GDPR Request.
+ */
+export async function redactShop(db: Database, domain: string): Promise<'redacted' | 'skipped'> {
+  const shop = await getShop(db, domain);
+  if (shop && !shop.uninstalledAt) return 'skipped';
+
+  const installedShop = db
+    .select({ id: shopTable.id })
+    .from(shopTable)
+    .where(and(eq(shopTable.myshopifyDomain, domain), isNull(shopTable.uninstalledAt)));
+
+  await db.batch([
+    db.delete(sessionTable).where(and(eq(sessionTable.shop, domain), notExists(installedShop))),
+    db
+      .delete(shopTable)
+      .where(and(eq(shopTable.myshopifyDomain, domain), isNotNull(shopTable.uninstalledAt))),
+  ]);
+
+  return 'redacted';
 }

@@ -63,6 +63,32 @@ for the flows.
   batch sets `uninstalledAt` (event time) and `updatedAt` and deletes the domain's Sessions. Metadata
   is kept, so the Shop row survives uninstall. With no Shop row it still deletes the Sessions.
 
+### Shop redaction
+
+`redactShop(db, domain)` in `app/server/shop.server.ts` erases a Shop after Shopify's `shop/redact`
+request (sent after an uninstall). It is the only place a `shop` row is deleted, and it is
+independent of `gdpr_request` persistence. The webhook flow is in
+[webhooks.md](./webhooks.md#shop-redaction-shopredact).
+
+- **Installed Shop:** returns `skipped` without deleting anything. The request belongs to an
+  earlier installation that has since been replaced.
+- **Uninstalled or missing Shop:** one D1 batch (`db.batch`) deletes the Sessions with
+  `session.shop` equal to the domain and the `shop` row. A missing Shop is a valid, idempotent
+  cleanup case, and the Sessions are still deleted.
+- **Reinstall protection:** the deletes carry database predicates, so a Shop that reinstalls
+  between the initial read and the batch is protected. Sessions are deleted only while no
+  installed Shop with that domain exists when the statement runs, and the Shop row only while it
+  is uninstalled. If a reinstall made every delete a no-op, the call still returns `redacted`.
+- **Evidence is kept:** no `gdpr_request` row is touched, including the one being processed.
+- **Fresh Shop afterwards:** a later install after redaction inserts a new row with a new
+  `createdAt`, so erased data is not resurrected.
+- **Accepted race:** token exchange can store a Session just before the admin wrapper establishes
+  the reinstalled Shop, and a redaction in that window deletes that Session. The next admin
+  request authenticates again and recovers.
+- **Extension point:** if your app adds Shop-scoped tables, delete from them in the same batch
+  inside `redactShop`, with the same installed-Shop guard. There are no foreign-key cascades,
+  tombstones or anonymized Shops.
+
 ### Authenticated admin requests always have a Shop
 
 Only the admin authentication wrapper in `app/shopify.server.ts` creates or reinstalls a Shop. After
@@ -91,8 +117,8 @@ interrupted request stays visible and is retried by Shopify's redelivery. See
 
 - **Scrub policy:** customer email and phone are removed before the payload is stored. Customer,
   order and data-request IDs are kept so the audit row stays meaningful.
-- **Retention:** rows are kept indefinitely as audit evidence. There is no pruning, TTL, or note
-  field, and no `updatedAt`.
+- **Retention:** rows are kept indefinitely as audit evidence, including through Shop redaction.
+  There is no pruning, TTL, or note field, and no `updatedAt`.
 - **No foreign keys:** a request can arrive for a shop with no matching row elsewhere, and the
   evidence must outlive any later deletion of that shop's data. `shopId` and `shopDomain` are plain
   values that are never joined by constraint.
