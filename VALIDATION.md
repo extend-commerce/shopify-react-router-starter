@@ -11,14 +11,15 @@ only to preserve this evidence.
 
 | Item                       | Value                                                                  |
 | -------------------------- | ---------------------------------------------------------------------- |
-| Implementation SHA (tested) | `d56a3649d8c423c2da6b5159f7935d756735eef0` (`feat/shop-gdpr-lifecycle`) |
+| Implementation SHA (tested) | `42e10f56ace81f540c70f2116513cb30dc61af22` (`feat/shop-gdpr-lifecycle`) |
 | Validation branch          | `test/d1-lifecycle-validation`                                         |
-| Harness commit             | `86e26e9` (`test: add local D1 validation harness`)                    |
-| Test commit                | `4b43ee6` (`test: validate Shop and GDPR lifecycle against local D1`)  |
+| Harness commit             | `2dd2678` (`test: add local D1 validation harness`)                    |
+| Test commit                | `35c8762` (`test: validate Shop and GDPR lifecycle against local D1`)  |
 | App code changes on branch | none (`app/`, `docs/`, `drizzle/`, TOML files are identical to the implementation SHA) |
 
 The branch history is: implementation SHA, then the harness commit, then the test commit, then
-the commit adding this file. Only `package.json`/`pnpm-lock.yaml` (adds `miniflare` and
+the commit adding this file. (The first validation run, with F1 failing, was on `d56a364`; the
+branch was then rebased onto the fixed implementation `42e10f5` and everything re-run.) Only `package.json`/`pnpm-lock.yaml` (adds `miniflare` and
 `test:d1`), `validation/` and this file differ from the implementation.
 
 ## Harness
@@ -55,7 +56,7 @@ Run on `pnpm install`, `pnpm exec graphql-codegen`, `pnpm router-typegen` at a c
 | `pnpm test`                                         | pass: 9 files, 76 tests, including the expired-token canary (`app/lib/webhook-auth-fallback.canary.test.ts`: the real library still throws a bare 500, so the fallback stays) |
 | `pnpm exec wrangler d1 migrations apply DB --local` | pass: all 3 migrations applied to a fresh local D1                    |
 | `pnpm db:generate`                                  | "No schema changes, nothing to migrate" (migrations match the schema) |
-| `pnpm test:d1`                                      | 166 passed, **1 failed** (finding F1, docs only); 8 files, 167 tests  |
+| `pnpm test:d1`                                      | pass: 8 files, 167 tests                                              |
 
 Results of `pnpm lint`, `pnpm format:check`, `pnpm typecheck` and `pnpm test` were identical
 on the implementation SHA before the harness was added and on the harness branch (the harness
@@ -102,7 +103,7 @@ the retry/reinstall guards, the fallback and its retirement, and the extension p
 
 | ID | Severity | Finding                                                                                                      | Status |
 | -- | -------- | ------------------------------------------------------------------------------------------------------------ | ------ |
-| F1 | Low (docs) | `docs/README.md` describes the Database guide as covering "the `session` and `shop` tables" and gives no summary of the Webhooks guide, so the index does not describe all three stored entities (`gdpr_request`) as the parent spec requires. | Fixed on local branch `fix/validation-findings` (`42e10f5`, based on the implementation SHA, not pushed). After the fix `pnpm test:d1` passes 167/167. **Unresolved on the implementation branch until the fix is brought back and revalidated against a new SHA.** |
+| F1 | Low (docs) | `docs/README.md` described the Database guide as covering "the `session` and `shop` tables" and gave no summary of the Webhooks guide, so the index did not describe all three stored entities (`gdpr_request`). | **Resolved.** Found on `d56a364`, fixed in `42e10f5` (docs-only change to `docs/README.md`, merged into `feat/shop-gdpr-lifecycle`). This branch was rebased onto `42e10f5`, which is the tested SHA, and all checks pass. |
 
 No persistence, SQL, migration, idempotency or race-guard defects were found. Observations that
 are not defects: a reinstall that completes before the `app/uninstalled` delivery for the old
