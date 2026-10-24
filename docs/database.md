@@ -2,7 +2,7 @@
 
 This document provides an overview of the database used in the Shopify React Router Starter.
 
-The app persists its Sessions, Shops and GDPR requests on [Cloudflare D1](https://developers.cloudflare.com/d1/)
+The app persists its Sessions, Shops and GDPR Requests on [Cloudflare D1](https://developers.cloudflare.com/d1/)
 (SQLite) via [Drizzle ORM](https://orm.drizzle.team/). There's no standalone database server or
 connection string — the D1 database is a binding (`DB`) configured per environment in a wrangler
 config file (see [deployment.md](./deployment.md)).
@@ -62,6 +62,12 @@ for the flows.
   strictly later than `installedAt`; otherwise the event is `stale` and ignored. When it applies, one
   batch sets `uninstalledAt` (event time) and `updatedAt` and deletes the domain's Sessions. Metadata
   is kept, so the Shop row survives uninstall. With no Shop row it still deletes the Sessions.
+  The strictly-later rule is repeated in SQL (the update matches only while `installedAt <
+  triggeredAt`, the Session delete only while no Shop with that domain has `installedAt >=
+  triggeredAt`), so a Shop that reinstalls between the read and the batch is left untouched.
+- **Accepted race:** token exchange can store a Session just before the admin wrapper establishes
+  the reinstalled Shop, and an uninstall cleanup in that window deletes that Session. The next
+  admin request authenticates again and recovers.
 
 ### Shop redaction
 

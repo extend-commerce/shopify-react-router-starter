@@ -72,11 +72,22 @@ Session, so it runs even when authentication produced none (see the fallback abo
 - **No Shop row** (an install that predates the `shop` table, or a redacted Shop): the Sessions are
   still deleted. Outcome `missing` (logged at `info`).
 
-The route falls back to the receipt time if `X-Shopify-Triggered-At` is absent or unparseable.
+The strictly-later rule is also enforced in SQL: the update only matches while
+`installedAt < triggeredAt`, and the Session delete only runs while no Shop with the domain has
+`installedAt >= triggeredAt` when the statement executes. A Shop that reinstalls between the
+initial read and the batch therefore keeps its new row and Sessions; the call may still report
+`uninstalled` (or `missing`) while the statements matched nothing.
+
+The route does not guess the event time. The library types `triggeredAt` as optional and does not
+validate it, so if `X-Shopify-Triggered-At` is absent or unparseable the route throws and Shopify
+retries. Substituting the receipt time could uninstall a fresh Reinstall. (`recordGdprRequest` does
+fall back to the receipt time, because `gdpr_request.triggeredAt` is a required audit column and
+not a guard.)
 
 Accepted race: token exchange can store a new Session just before the admin wrapper establishes the
-reinstalled Shop, and an uninstall cleanup running in that window deletes it. The next admin request
-authenticates again and recovers. There are no locks or recovery mechanism.
+reinstalled Shop, and an uninstall cleanup running in that window (no Shop with a later
+`installedAt` exists yet) deletes it. The next admin request authenticates again and recovers.
+There are no locks or recovery mechanism.
 
 ### Scopes update
 

@@ -3,14 +3,13 @@ import { sessionTable, shopTable } from 'app/db/schema';
 import { GET_SHOP_SNAPSHOT } from 'app/graphql/queries';
 import { type AdminApiContextWithoutRest } from 'app/shopify.server';
 import { type GetShopSnapshotQuery } from 'app/types/admin.generated';
-import { and, eq, isNotNull, isNull, notExists, sql } from 'drizzle-orm';
+import { and, eq, gte, isNotNull, isNull, lt, notExists, sql } from 'drizzle-orm';
 
 /** A row of the `shop` table: the merchant tenant, identified by its myshopify domain. */
 export type Shop = typeof shopTable.$inferSelect;
 
 type ShopMetadata = Pick<
   typeof shopTable.$inferInsert,
-  | 'id'
   | 'name'
   | 'email'
   | 'contactEmail'
@@ -29,9 +28,16 @@ function parseShopId(gid: string) {
   return Number(id);
 }
 
+// What a snapshot yields: the Shop ID (the upsert key, which never changes) and the metadata that
+// is refreshed on every later snapshot.
+interface ShopSnapshot {
+  id: number;
+  metadata: ShopMetadata;
+}
+
 // Admin GraphQL is the canonical source of Shop metadata. Never returns a partial snapshot: a
 // response without a Shop (for example a throttled or failed query) throws with its GraphQL errors.
-async function fetchShopSnapshot(admin: AdminApiContextWithoutRest): Promise<ShopMetadata> {
+async function fetchShopSnapshot(admin: AdminApiContextWithoutRest): Promise<ShopSnapshot> {
   const response = await admin.graphql(GET_SHOP_SNAPSHOT);
   // The client's response type omits `errors`, but a failed query carries them in the body.
   const { data, errors }: { data?: GetShopSnapshotQuery; errors?: unknown } = await response.json();
@@ -45,15 +51,17 @@ async function fetchShopSnapshot(admin: AdminApiContextWithoutRest): Promise<Sho
   const { shop } = data;
   return {
     id: parseShopId(shop.id),
-    name: shop.name,
-    email: shop.email,
-    contactEmail: shop.contactEmail,
-    shopOwnerName: shop.shopOwnerName,
-    primaryDomain: shop.primaryDomain.host,
-    countryCode: shop.billingAddress.countryCodeV2 ?? null,
-    shopifyPlan: shop.plan.publicDisplayName,
-    shopifyPlus: shop.plan.shopifyPlus,
-    partnerDevelopment: shop.plan.partnerDevelopment,
+    metadata: {
+      name: shop.name,
+      email: shop.email,
+      contactEmail: shop.contactEmail,
+      shopOwnerName: shop.shopOwnerName,
+      primaryDomain: shop.primaryDomain.host,
+      countryCode: shop.billingAddress.countryCodeV2 ?? null,
+      shopifyPlan: shop.plan.publicDisplayName,
+      shopifyPlus: shop.plan.shopifyPlus,
+      partnerDevelopment: shop.plan.partnerDevelopment,
+    },
   };
 }
 
@@ -101,7 +109,7 @@ export async function ensureShop(
   const existing = await getShop(db, domain);
   if (existing && !existing.uninstalledAt) return existing;
 
-  const { id, ...metadata } = await fetchShopSnapshot(admin);
+  const { id, metadata } = await fetchShopSnapshot(admin);
   const now = new Date();
 
   // In an ON CONFLICT update, `shopTable.uninstalledAt` is the stored value from before this
@@ -155,8 +163,8 @@ export async function refreshShop(
   const existing = await getShop(db, domain);
   if (!existing || existing.uninstalledAt) return 'not_installed';
 
-  // The Shop ID never changes, so it is not part of the update.
-  const { id: _id, ...metadata } = await fetchShopSnapshot(admin);
+  // The Shop ID never changes, so only the metadata is part of the update.
+  const { metadata } = await fetchShopSnapshot(admin);
   const updated = await db
     .update(shopTable)
     .set({ ...metadata, updatedAt: new Date() })
@@ -177,13 +185,21 @@ export async function refreshShop(
  *   period, so nothing is changed (the current Shop and Sessions stay) and no Admin API call is made.
  * - **No Shop row** (a pre-feature install, or after redaction): still deletes the Sessions.
  *
- * Accepted race: token exchange can store a Session just before the admin wrapper reinstalls the
- * Shop, and a cleanup running in that window deletes it. The next admin request self-heals, so
- * there is no locking. Does not log.
+ * The strictly-later rule is enforced in SQL as well as in the initial read: the update only
+ * matches while `installedAt < triggeredAt`, and the Session delete only runs while no Shop with
+ * this domain has `installedAt >= triggeredAt` when the statement executes. So a Shop that
+ * reinstalls between the read and the batch keeps its new row and Sessions. If that happens the
+ * statements match nothing and the call still returns `uninstalled` (or `missing`).
+ *
+ * Accepted narrow race: token exchange can store a Session just before the admin wrapper
+ * establishes the reinstalled Shop row (so no Shop with a later `installedAt` exists yet), and a
+ * cleanup running in that window deletes it. The next admin request self-heals, so there is no
+ * locking. Does not log.
  *
  * @param db The database handle.
  * @param domain The `*.myshopify.com` domain, as in the webhook context's `shop`.
- * @param triggeredAt When Shopify triggered the event (`X-Shopify-Triggered-At`).
+ * @param triggeredAt When Shopify triggered the event (`X-Shopify-Triggered-At`). It must be the
+ * real event time: a substituted receipt time could uninstall a newer installation.
  * @returns `uninstalled` when the Shop was marked uninstalled; `stale` when the event was ignored;
  * `missing` when there was no Shop row.
  * @throws On a database error. Callers should let it propagate so Shopify retries the delivery.
@@ -194,20 +210,28 @@ export async function uninstallShop(
   triggeredAt: Date,
 ): Promise<'uninstalled' | 'stale' | 'missing'> {
   const existing = await getShop(db, domain);
+  if (existing && triggeredAt.getTime() <= existing.installedAt.getTime()) return 'stale';
+
+  // A Shop installed at or after the event means the event is from an earlier install period.
+  const laterInstall = db
+    .select({ id: shopTable.id })
+    .from(shopTable)
+    .where(and(eq(shopTable.myshopifyDomain, domain), gte(shopTable.installedAt, triggeredAt)));
+  const deleteSessions = db
+    .delete(sessionTable)
+    .where(and(eq(sessionTable.shop, domain), notExists(laterInstall)));
 
   if (!existing) {
-    await db.delete(sessionTable).where(eq(sessionTable.shop, domain));
+    await deleteSessions;
     return 'missing';
   }
-
-  if (triggeredAt.getTime() <= existing.installedAt.getTime()) return 'stale';
 
   await db.batch([
     db
       .update(shopTable)
       .set({ uninstalledAt: triggeredAt, updatedAt: new Date() })
-      .where(eq(shopTable.myshopifyDomain, domain)),
-    db.delete(sessionTable).where(eq(sessionTable.shop, domain)),
+      .where(and(eq(shopTable.myshopifyDomain, domain), lt(shopTable.installedAt, triggeredAt))),
+    deleteSessions,
   ]);
   return 'uninstalled';
 }

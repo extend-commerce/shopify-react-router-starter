@@ -127,23 +127,12 @@ describe('app/uninstalled webhook', () => {
   });
 
   it.each([undefined, 'not a date'])(
-    'falls back to the receipt time when the event time is %s',
+    'does not acknowledge, so Shopify retries, when the event time is %s',
     async triggeredAt => {
-      vi.useFakeTimers({ now: new Date('2026-10-25T00:00:00.000Z') });
-      try {
-        vi.mocked(authenticate.webhook).mockResolvedValue(fromPartial({ ...webhook, triggeredAt }));
-        vi.mocked(uninstallShop).mockResolvedValueOnce('uninstalled');
+      vi.mocked(authenticate.webhook).mockResolvedValue(fromPartial({ ...webhook, triggeredAt }));
 
-        await deliver();
-
-        expect(uninstallShop).toHaveBeenCalledWith(
-          database,
-          'example.myshopify.com',
-          new Date('2026-10-25T00:00:00.000Z'),
-        );
-      } finally {
-        vi.useRealTimers();
-      }
+      await expect(deliver()).rejects.toThrow('X-Shopify-Triggered-At');
+      expect(uninstallShop).not.toHaveBeenCalled();
     },
   );
 
