@@ -13,6 +13,7 @@ import { sessionTable } from './db/schema';
 import { extendLogContext, getLogger } from './lib/logger';
 import { redactShopifyLogMessage } from './lib/logger/redact-shopify-message';
 import { apiVersion } from './lib/shopify-api-version';
+import { authenticateWebhookWithFallback } from './lib/webhook-auth-fallback';
 
 export { apiVersion };
 // Debug locally, where `import.meta.env.DEV` is set. Staging and production stay at info.
@@ -63,7 +64,11 @@ async function authenticateAdmin(request: Request) {
 }
 
 async function authenticateWebhook(request: Request) {
-  const result = await shopify.authenticate.webhook(request);
+  const result = await authenticateWebhookWithFallback(
+    shopify.authenticate.webhook,
+    request,
+    process.env.SHOPIFY_API_SECRET || '',
+  );
   extendLogContext({
     shop: result.shop,
     ...(result.session ? { sessionId: result.session.id } : {}),
