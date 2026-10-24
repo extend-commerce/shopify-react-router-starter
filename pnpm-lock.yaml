@@ -227,9 +227,6 @@ importers:
       '@commitlint/cz-commitlint':
         specifier: ^21.2.3
         version: 21.2.3(@types/node@26.6.2)(commitizen@4.3.2(@types/node@26.6.2)(typescript@6.0.3))(typescript@6.0.3)
-      '@libsql/client':
-        specifier: ^0.18.0
-        version: 0.18.0
       '@shopify/admin-api-client':
         specifier: ^2.0.0
         version: 2.0.0
@@ -7148,10 +7145,12 @@ snapshots:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
+    optional: true
 
   '@libsql/core@0.18.0':
     dependencies:
       js-base64: 3.9.4
+    optional: true
 
   '@libsql/darwin-arm64@0.5.29':
     optional: true
@@ -7166,6 +7165,7 @@ snapshots:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
+    optional: true
 
   '@libsql/isomorphic-ws@0.1.5':
     dependencies:
@@ -7174,6 +7174,7 @@ snapshots:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
+    optional: true
 
   '@libsql/linux-arm-gnueabihf@0.5.29':
     optional: true
@@ -7207,7 +7208,8 @@ snapshots:
   '@napi-rs/lzma-linux-x64-gnu@1.5.1':
     optional: true
 
-  '@neon-rs/load@0.0.4': {}
+  '@neon-rs/load@0.0.4':
+    optional: true
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -8178,7 +8180,8 @@ snapshots:
 
   detect-indent@7.0.2: {}
 
-  detect-libc@2.0.2: {}
+  detect-libc@2.0.2:
+    optional: true
 
   detect-libc@2.1.2: {}
 
@@ -8736,7 +8739,8 @@ snapshots:
 
   jose@5.10.0: {}
 
-  js-base64@3.9.4: {}
+  js-base64@3.9.4:
+    optional: true
 
   js-tokens@4.0.0: {}
 
@@ -8783,6 +8787,7 @@ snapshots:
       '@libsql/linux-x64-gnu': 0.5.29
       '@libsql/linux-x64-musl': 0.5.29
       '@libsql/win32-x64-msvc': 0.5.29
+    optional: true
 
   lightningcss-android-arm64@1.33.0:
     optional: true
@@ -9190,7 +9195,8 @@ snapshots:
 
   prettier@3.9.9: {}
 
-  promise-limit@2.7.0: {}
+  promise-limit@2.7.0:
+    optional: true
 
   query-selector-shadow-dom@1.0.1: {}
 

@@ -45,22 +45,19 @@ pnpm run db:migrate:production:remote # the real production database
 
 ## Browsing the Local Database
 
-Drizzle Studio is the default database browser:
+Use Cloudflare's built-in
+[Local Explorer](https://developers.cloudflare.com/workers/local-development/local-explorer/) to
+browse tables, run SQL, and inspect the Worker's bindings. It needs no setup, but only exists while
+`pnpm dev` is running. With the dev server up, run:
 
 ```bash
-pnpm run db:studio
+pnpm explorer
 ```
 
-This opens [Drizzle Studio](https://orm.drizzle.team/drizzle-studio/overview) against the local D1
-database that `pnpm run db:migrate` (or `pnpm run dev`) creates under `.wrangler/state`. Run a
-migration first if it reports a missing `url`. The SQLite filename is stable for a given D1
-database ID but intentionally hashed by Miniflare, so the Drizzle config discovers it. It fails
-with a clear error instead of choosing arbitrarily if more than one local database file exists.
-Studio only connects to the local database, never the staging or production ones.
+This opens
+[`http://localhost:3000/cdn-cgi/local/explorer`](http://localhost:3000/cdn-cgi/local/explorer) in
+your browser. The same URL is also printed in the `pnpm dev` output once the server is ready.
 
-While `pnpm dev` is running, Cloudflare's built-in
-[Local Explorer](https://developers.cloudflare.com/workers/local-development/local-explorer/) is
-also available at
-[`http://localhost:3000/cdn-cgi/local/explorer`](http://localhost:3000/cdn-cgi/local/explorer).
-It is a zero-setup alternative for browsing tables and running SQL, and is intentionally not
-available through the public Shopify tunnel.
+Local Explorer only shows the local D1 database that `pnpm run db:migrate` (or `pnpm run dev`)
+creates under `.wrangler/state`, never the staging or production ones. It is intentionally not
+available through the public Shopify tunnel, only on `localhost`.

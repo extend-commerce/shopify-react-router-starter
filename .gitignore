@@ -42,3 +42,6 @@ shopify.app.*.toml
 
 # graft's local graph cache — regenerable, not committed (run `graft build`).
 /graft/
+
+# wrangler's generated types
+worker-configuration.d.ts
