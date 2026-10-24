@@ -9,6 +9,15 @@ embedded = true
 [webhooks]
 api_version = "2026-10"
 
+  # Mandatory compliance webhooks. Each topic has its own route in app/routes.
+  [[webhooks.subscriptions]]
+  compliance_topics = [ "customers/data_request" ]
+  uri = "/webhooks/customers/data_request"
+
+  [[webhooks.subscriptions]]
+  compliance_topics = [ "customers/redact" ]
+  uri = "/webhooks/customers/redact"
+
 [access_scopes]
 scopes = "read_products"
 
