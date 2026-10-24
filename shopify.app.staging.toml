@@ -18,6 +18,10 @@ api_version = "2026-10"
   compliance_topics = [ "customers/redact" ]
   uri = "/webhooks/customers/redact"
 
+  [[webhooks.subscriptions]]
+  compliance_topics = [ "shop/redact" ]
+  uri = "/webhooks/shop/redact"
+
 [access_scopes]
 scopes = "read_products"
 
