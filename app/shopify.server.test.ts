@@ -3,10 +3,15 @@ import { createHmac } from 'node:crypto';
 import { fromPartial } from '@total-typescript/shoehorn';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { type Shop } from './server/shop.server';
+
 const SECRET = 'test-secret';
 
-const { libraryWebhook, logger } = vi.hoisted(() => ({
+const { libraryAdmin, libraryWebhook, ensureShop, db, logger } = vi.hoisted(() => ({
+  libraryAdmin: vi.fn(),
   libraryWebhook: vi.fn(),
+  ensureShop: vi.fn(),
+  db: { name: 'db' },
   logger: {
     warn: vi.fn(),
     info: vi.fn(),
@@ -22,7 +27,7 @@ const { libraryWebhook, logger } = vi.hoisted(() => ({
 vi.mock('@shopify/shopify-app-react-router/server', async importOriginal => ({
   ...(await importOriginal<Record<string, unknown>>()),
   shopifyApp: () => ({
-    authenticate: { admin: vi.fn(), webhook: libraryWebhook },
+    authenticate: { admin: libraryAdmin, webhook: libraryWebhook },
     addDocumentResponseHeaders: vi.fn(),
     unauthenticated: {},
     registerWebhooks: vi.fn(),
@@ -32,7 +37,8 @@ vi.mock('@shopify/shopify-app-react-router/server', async importOriginal => ({
 vi.mock('@shopify/shopify-app-session-storage-drizzle', () => ({
   DrizzleSessionStorageSQLite: vi.fn(),
 }));
-vi.mock('./db.server', () => ({ db: {} }));
+vi.mock('./db.server', () => ({ db }));
+vi.mock('./server/shop.server', () => ({ ensureShop }));
 vi.mock('./lib/logger', async importOriginal => ({
   ...(await importOriginal<Record<string, unknown>>()),
   getLogger: () => logger,
@@ -179,5 +185,57 @@ describe('authenticate.webhook', () => {
         expect(logger.warn).not.toHaveBeenCalled();
       },
     );
+  });
+});
+
+const SHOP_DOMAIN = 'test-shop.myshopify.com';
+
+function mockAuthenticatedAdmin() {
+  const admin = { graphql: vi.fn() };
+  const session = { id: `offline_${SHOP_DOMAIN}`, shop: SHOP_DOMAIN };
+  libraryAdmin.mockResolvedValue({ admin, session });
+  return { admin, session };
+}
+
+describe('authenticate.admin', () => {
+  const request = new Request(`https://app.example.com/app?shop=${SHOP_DOMAIN}`);
+
+  beforeEach(() => {
+    ensureShop.mockReset();
+    libraryAdmin.mockReset();
+  });
+
+  it('ensures the installed Shop for the session domain with the admin client', async () => {
+    const { admin } = mockAuthenticatedAdmin();
+    ensureShop.mockResolvedValue(fromPartial<Shop>({ id: 1 }));
+
+    await authenticate.admin(request);
+
+    expect(ensureShop).toHaveBeenCalledWith(db, SHOP_DOMAIN, admin);
+  });
+
+  it('returns the ensured Shop row next to the library context', async () => {
+    const { admin, session } = mockAuthenticatedAdmin();
+    const shop = fromPartial<Shop>({ id: 1, myshopifyDomain: SHOP_DOMAIN });
+    ensureShop.mockResolvedValue(shop);
+
+    const context = await authenticate.admin(request);
+
+    expect(context).toMatchObject({ admin, session, shop });
+  });
+
+  it('fails the request when the Shop cannot be ensured', async () => {
+    mockAuthenticatedAdmin();
+    ensureShop.mockRejectedValue(new Error('snapshot failed'));
+
+    await expect(authenticate.admin(request)).rejects.toThrow('snapshot failed');
+  });
+
+  it('does not ensure a Shop when the library rejects the request', async () => {
+    const redirect = new Response(null, { status: 302 });
+    libraryAdmin.mockRejectedValue(redirect);
+
+    await expect(authenticate.admin(request)).rejects.toBe(redirect);
+    expect(ensureShop).not.toHaveBeenCalled();
   });
 });

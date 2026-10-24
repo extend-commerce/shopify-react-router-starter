@@ -14,6 +14,7 @@ import { extendLogContext, getLogger } from './lib/logger';
 import { redactShopifyLogMessage } from './lib/logger/redact-shopify-message';
 import { apiVersion } from './lib/shopify-api-version';
 import { authenticateWebhookWithFallback } from './lib/webhook-auth-fallback';
+import { ensureShop } from './server/shop.server';
 
 export { apiVersion };
 // Debug locally, where `import.meta.env.DEV` is set. Staging and production stay at info.
@@ -54,13 +55,19 @@ export const addDocumentResponseHeaders = shopify.addDocumentResponseHeaders;
 
 // Shop and session id exist only after auth succeeds. `extendLogContext` stamps them on the rest
 // of this request; lines emitted inside `authenticate` itself still carry only requestId and path.
+//
+// This wrapper alone owns install/reinstall writes: after the library authenticates, it ensures an
+// installed Shop row for the Session's domain and returns it as `shop`. A snapshot or database
+// failure fails the request, so a loader or action can rely on `shop` existing. Don't add an
+// `afterAuth` write hook; this is the only place the Shop is created or reinstalled.
 async function authenticateAdmin(request: Request) {
   const result = await shopify.authenticate.admin(request);
   extendLogContext({
     shop: result.session.shop,
     sessionId: result.session.id,
   });
-  return result;
+  const shop = await ensureShop(db, result.session.shop, result.admin);
+  return { ...result, shop };
 }
 
 async function authenticateWebhook(request: Request) {
