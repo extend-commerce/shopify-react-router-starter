@@ -94,6 +94,10 @@ export async function getShop(db: Database, domain: string): Promise<Shop | unde
  *
  * Concurrent initialization is accepted without locks. Does not log.
  *
+ * Known limitation: a reinstall that finishes before its earlier uninstall event has been processed
+ * leaves the old row installed, so it is returned unchanged and `installedAt` does not advance; the
+ * late event then applies and the next admin request re-establishes the Shop. See docs/webhooks.md.
+ *
  * @param db The database handle.
  * @param domain The `*.myshopify.com` domain of the authenticated Session.
  * @param admin The Admin GraphQL client of the authenticated request.
@@ -255,6 +259,9 @@ export async function uninstallShop(
  *
  * The call is safe to repeat. A later install after redaction creates a fresh Shop row. Does not
  * log.
+ *
+ * Known limitation: `skipped` trusts `uninstalledAt`, so a Shop whose uninstall event was never
+ * processed is not erased. See docs/webhooks.md.
  *
  * EXTENSION POINT: if your app adds tables keyed by Shop, delete from them as extra statements in
  * the batch below, with the same installed-Shop guard as the Session delete. Without it, a

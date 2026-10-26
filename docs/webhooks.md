@@ -89,6 +89,15 @@ reinstalled Shop, and an uninstall cleanup running in that window (no Shop with 
 `installedAt` exists yet) deletes it. The next admin request authenticates again and recovers.
 There are no locks or recovery mechanism.
 
+Known limitation: a reinstall that completes before its earlier `app/uninstalled` delivery has been
+processed leaves the old row looking installed (`uninstalledAt` is null), so the admin wrapper
+returns it without a snapshot and `installedAt` does not advance. When the delayed event finally
+arrives its `triggeredAt` is later than that `installedAt`, so it is applied: the Shop is marked
+uninstalled and the new Sessions are deleted. The next admin request authenticates again and
+`ensureShop` reinstates the Shop, so the effect is one forced re-authentication. Detecting this
+would need a reinstall signal (an `afterAuth` write or a per-request check), which the starter
+deliberately avoids. Shopify normally delivers the uninstall long before a merchant can reinstall.
+
 ### Scopes update
 
 Unchanged: the route stores the new scope list on the Session when there is one. It does not touch
@@ -154,6 +163,12 @@ abstraction:
   between the initial read and the batch leaves the new Shop and Sessions intact (the call may
   then still report `redacted`). Details in
   [database.md](./database.md#shop-redaction).
+- **Known limitation, missed uninstall:** `skipped` trusts `uninstalledAt`. If the `app/uninstalled`
+  delivery was never processed (for example retries were exhausted during an outage), the Shop still
+  looks installed, so its `shop/redact` is `skipped` and the Shop row and Sessions are not erased.
+  The starter cannot tell this apart from a Reinstall without guessing from timing, and a wrong
+  guess would erase a live Shop, so it keeps the safe outcome. Forks that need erasure here can
+  delete the leftover rows by hand or add their own check in `redactShop`.
 - **GDPR evidence is preserved:** no `gdpr_request` row is deleted, including the current one.
 - **Retry:** if the deletion throws, the route does not complete the request and the failure
   propagates, so it stays `pending` and Shopify redelivers. If the deletion succeeds but
