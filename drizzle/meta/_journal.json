@@ -8,6 +8,20 @@
       "when": 1790152274463,
       "tag": "0000_first_grey_gargoyle",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1792854471573,
+      "tag": "0001_tearful_pretty_boy",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792854695175,
+      "tag": "0002_cheerful_roxanne_simpson",
+      "breakpoints": true
     }
   ]
 }

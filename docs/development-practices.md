@@ -62,6 +62,21 @@ Test loaders, actions, server helpers and plain functions:
 - **Server helpers:** pass them a stubbed `admin` (see `app/server/products.server.test.ts`).
 - **Stubs:** build partial objects with [`fromPartial()`](https://github.com/total-typescript/shoehorn) from `@total-typescript/shoehorn` instead of `as` (or `fromAny()` when the data is wrong on purpose).
 - **Route modules that import `app/shopify.server`:** add `vi.mock('app/shopify.server')`, since it opens the D1 binding on import.
+- **Persistence:** there is no D1 test harness. Mock the persistence module (`app/server/shop.server`) and test what calls it, as `app/shopify.server.test.ts` does for the admin wrapper.
+
+## Authenticating Admin Requests
+
+Call `authenticate.admin(request)` from `app/shopify.server` in every admin loader and action. Besides the library's `admin` client and `session`, it returns `shop`, the installed Shop row (see [database.md](./database.md)):
+
+```ts
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { admin, shop } = await authenticate.admin(request);
+  // shop.id, shop.name, shop.shopifyPlan, ...
+};
+```
+
+- **Don't look the Shop up yourself.** The wrapper already did, and it creates the row on a first visit and refreshes it on a Reinstall. If that fails, the request fails.
+- **Row, not domain.** `shop` here is the row. In a webhook context, `authenticate.webhook(request)` returns `shop` as the `*.myshopify.com` domain string.
 
 ## Links and Navigation
 

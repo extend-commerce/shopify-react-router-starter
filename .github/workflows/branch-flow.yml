@@ -19,7 +19,7 @@ jobs:
     steps:
       - run: |
           if [[ "$BASE" == dev ]]; then
-            if [[ ! "$HEAD" =~ ^(feat|fix|refactor)/ ]]; then
+            if [[ ! "$HEAD" =~ ^(feat|fix|refactor|feature|hotfix)/ ]]; then
               echo "::error::Only feat/*, fix/* and refactor/* branches merge into dev, got '$HEAD'"
               exit 1
             fi

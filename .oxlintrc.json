@@ -30,7 +30,8 @@
     ".shopify",
     ".react-router",
     ".husky",
-    "./app/types/**/*.d.ts"
+    "./app/types/**/*.d.ts",
+    "worker-configuration.d.ts"
   ],
   "rules": {
     "constructor-super": "error",
@@ -179,7 +180,7 @@
           }
         ],
         "import/consistent-type-specifier-style": ["warn", "prefer-inline"],
-        "no-console": "warn",
+        "no-console": "error",
         "react/rules-of-hooks": "error",
         "react/exhaustive-deps": "warn",
         "react/require-render-return": "error",

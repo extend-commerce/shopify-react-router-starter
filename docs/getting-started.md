@@ -30,7 +30,7 @@ This guide will walk you through setting up and running the Shopify React Router
 
 4. **Set up the database:**
 
-   The app persists its session data on Cloudflare D1 (SQLite) via Drizzle. Local development runs
+   The app persists its Sessions, Shops and GDPR Requests on Cloudflare D1 (SQLite) via Drizzle. Local development runs
    against a local D1 database through `wrangler`/miniflare rather than a standalone database
    server — there's no Docker container or connection string to configure. Migrations live in
    `drizzle/` (generate new ones with `pnpm run db:generate` after changing `app/db/schema.ts`) and are

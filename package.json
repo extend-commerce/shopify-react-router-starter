@@ -8,7 +8,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "build": "react-router build",
-    "dev": "node scripts/assert-no-dev-vars.js && shopify app dev",
+    "dev": "node scripts/assert-no-dev-vars.js && shopify app dev --config development",
+    "explorer": "node scripts/open-local-explorer.js",
     "config:link": "shopify app config link",
     "generate": "shopify app generate",
     "deploy": "shopify app deploy",
@@ -16,7 +17,6 @@
     "env": "shopify app env",
     "deploy:staging": "pnpm run build && wrangler deploy --config wrangler.staging.jsonc",
     "deploy:production": "pnpm run build && wrangler deploy --config wrangler.production.jsonc",
-    "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "wrangler d1 migrations apply DB --local",
     "db:migrate:staging:remote": "wrangler d1 migrations apply DB --remote --config wrangler.staging.jsonc",
@@ -24,7 +24,7 @@
     "lint": "oxlint",
     "commit": "cz",
     "prepare": "node .husky/install.mjs",
-    "postinstall": "graphql-codegen",
+    "postinstall": "graphql-codegen && react-router typegen && wrangler types",
     "router-typegen": "react-router typegen"
   },
   "type": "module",
@@ -40,7 +40,9 @@
     "@shopify/shopify-app-react-router": "^3.0.0",
     "@shopify/shopify-app-session-storage-drizzle": "^6.0.0",
     "drizzle-orm": "^0.45.3",
+    "featurebase-js": "^1.0.3",
     "isbot": "^5.2.2",
+    "jsonwebtoken": "^9.0.3",
     "posthog-js": "^1.434.7",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
@@ -54,7 +56,6 @@
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.3",
     "@commitlint/cz-commitlint": "^21.2.3",
-    "@libsql/client": "^0.18.0",
     "@shopify/admin-api-client": "^2.0.0",
     "@shopify/api-codegen-preset": "^3.0.0",
     "@shopify/app-bridge-types": "^0.7.2",
@@ -63,6 +64,7 @@
     "@shopify/shopify-api": "^15.0.0",
     "@total-typescript/shoehorn": "^0.1.2",
     "@total-typescript/ts-reset": "^0.6.1",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.6.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
@@ -95,5 +97,5 @@
     "minimatch": "9.0.5"
   },
   "author": "hasham.khalid@extendcommerce.com",
-  "packageManager": "pnpm@12.6.0+sha512.3ef68f951cb111ac204b4a5a16f0b2ddf0da56a96e0413e81d855d9f0b55ef926714709028e1cd00c405c2c5fb7b9e8ec4dc46777c805d0373c2f2ff00fd20ec"
+  "packageManager": "pnpm@12.15.0+sha512.b3951d6d6ff4a9f13dc7cf56cd28d2b8eb37dbcc9c68e52e1e1191873ea9f82a017287ab50baadc5ccc494f036c67c0e47eb13608c2fa36f47711b61ea128e61"
 }
