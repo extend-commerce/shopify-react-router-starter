@@ -72,6 +72,6 @@
   // "routes": [{ "pattern": "staging.example.com", "custom_domain": true }],
   // Deploy fails while this secret is unset. Set it with `wrangler secret put`.
   "secrets": {
-    "required": ["SHOPIFY_API_SECRET"],
+    "required": ["SHOPIFY_API_SECRET", "FEATUREBASE_APP_ID", "FEATUREBASE_SECRET"],
   },
 }

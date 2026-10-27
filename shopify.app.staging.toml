@@ -6,6 +6,8 @@ name = "Extend RR Starter - Staging"
 application_url = "https://shopify-react-router-starter-staging.personal-93c.workers.dev"
 embedded = true
 
+[access]
+embedded_app_direct_api_access = true
 [webhooks]
 api_version = "2026-10"
 

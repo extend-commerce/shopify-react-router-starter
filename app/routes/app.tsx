@@ -1,19 +1,26 @@
 import { AppProvider } from '@shopify/shopify-app-react-router/react';
 import { boundary } from '@shopify/shopify-app-react-router/server';
+import { ClientOnly } from 'app/components/client-only';
+import { Featurebase } from 'app/components/featurebase';
+import { prepareUserInfo } from 'app/server/user.server';
 import { authenticate } from 'app/shopify.server';
 import { useEffect } from 'react';
-import { Outlet, useLoaderData, useNavigation, useRouteError } from 'react-router';
+import { Outlet, useNavigation, useRouteError } from 'react-router';
 
 import { type Route } from './+types/app';
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  await authenticate.admin(request);
+  const ctx = await authenticate.admin(request);
 
-  return { apiKey: process.env.SHOPIFY_API_KEY ?? '' };
+  return {
+    apiKey: process.env.SHOPIFY_API_KEY ?? '',
+    featurebaseAppId: process.env.FEATUREBASE_APP_ID ?? '',
+    userInfo: prepareUserInfo(ctx, request),
+  };
 };
 
-export default function App() {
-  const { apiKey } = useLoaderData<typeof loader>();
+export default function App({ loaderData }: Route.ComponentProps) {
+  const { apiKey, featurebaseAppId, userInfo } = loaderData;
   const navigation = useNavigation();
 
   const isNavigating = Boolean(navigation.location);
@@ -24,6 +31,9 @@ export default function App() {
 
   return (
     <AppProvider apiKey={apiKey}>
+      <ClientOnly>
+        <Featurebase appId={featurebaseAppId} userInfo={userInfo} />
+      </ClientOnly>
       <s-app-nav>
         {/* @ts-expect-error -- remove once polaris-types adds `rel` to s-link */}
         <s-link href="/app" rel="home">
