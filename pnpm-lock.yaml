@@ -249,8 +249,8 @@ importers:
         specifier: 4.9.3
         version: 4.9.3
       '@shopify/polaris-types':
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: ^2.0.0
+        version: 2.0.0
       '@shopify/shopify-api':
         specifier: ^15.0.1
         version: 15.0.1
@@ -2816,8 +2816,8 @@ packages:
     peerDependencies:
       graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
 
-  '@shopify/polaris-types@1.1.0':
-    resolution: {integrity: sha512-hqd+58XbpsShQmTiMakiUraLL9yjeqcFkaEfiajdxAArQJGREsnNBxY1+cN0egWHFQ7/1Xsqjx0RObd3V0Fy1w==}
+  '@shopify/polaris-types@2.0.0':
+    resolution: {integrity: sha512-G1nv58jrTVvR07cBzIybtM66/wFykUyyBab4WSncV08ZmWamPfbs6bv3c0wC4UTDz4f2V0et0HbqLsBH8ZkJCQ==}
 
   '@shopify/shopify-api@15.0.1':
     resolution: {integrity: sha512-WLRmMar1JoMxqAYNvlPxukqEu/gYZ+tSICy8IkpVFa9erInI3xP/rEmWDtxCC0ZG1E41B6VsZFlFfKwQOrdKfQ==}
@@ -7240,7 +7240,7 @@ snapshots:
     transitivePeerDependencies:
       - graphql-sock
 
-  '@shopify/polaris-types@1.1.0': {}
+  '@shopify/polaris-types@2.0.0': {}
 
   '@shopify/shopify-api@15.0.1':
     dependencies:
