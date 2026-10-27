@@ -18,5 +18,9 @@ declare namespace NodeJS {
     readonly SHOPIFY_API_SECRET?: string;
     readonly SCOPES?: string;
     readonly SHOPIFY_APP_URL?: string;
+
+    // Featurebase
+    readonly FEATUREBASE_APP_ID?: string;
+    readonly FEATUREBASE_SECRET?: string;
   }
 }
