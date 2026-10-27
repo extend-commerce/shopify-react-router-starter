@@ -246,8 +246,8 @@ importers:
         specifier: ^0.7.3
         version: 0.7.3
       '@shopify/cli':
-        specifier: 4.9.3
-        version: 4.9.3
+        specifier: 4.9.4
+        version: 4.9.4
       '@shopify/polaris-types':
         specifier: ^1.1.0
         version: 1.1.0
@@ -2801,8 +2801,8 @@ packages:
   '@shopify/app-bridge-types@0.7.3':
     resolution: {integrity: sha512-zhLsMVRNNjwwLmvHPLWfKr5tRtAsr+rN7J4b6DCFMwVku2Q+zbo2DnSLnmouLBcGZrb3r6+d9vmQ4IbdXZ/Hkg==}
 
-  '@shopify/cli@4.9.3':
-    resolution: {integrity: sha512-Psa15JYOfkmNwutWEA7GJcy6aGGNDcjC0ZnkhUNrH27+O2oCYie/yVFSN+QJ/apBtXZpRgaMjv3NBX8TAFhMxQ==}
+  '@shopify/cli@4.9.4':
+    resolution: {integrity: sha512-Zisisi5gbpzD8OVTav+k6FPqoA6jp7sgaM0sr5DSze2oJ7KSAKaP+8dPcSIy5h4Oe+19EVYJGard9cqBKNmfbA==}
     engines: {node: '>=22.12.0'}
     os: [darwin, linux, win32]
     hasBin: true
@@ -7221,7 +7221,7 @@ snapshots:
     dependencies:
       '@standard-schema/spec': 1.1.0
 
-  '@shopify/cli@4.9.3':
+  '@shopify/cli@4.9.4':
     dependencies:
       '@ast-grep/napi': 0.43.0
       clipboardy: 4.0.0
