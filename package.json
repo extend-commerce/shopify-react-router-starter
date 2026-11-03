@@ -74,7 +74,7 @@
     "graphql-config": "^5.1.8",
     "husky": "^9.1.7",
     "oxfmt": "^0.72.0",
-    "oxlint": "^1.89.0",
+    "oxlint": "^1.90.0",
     "oxlint-tsgolint": "^7.0.2005",
     "typescript": "^6.0.3",
     "vite": "^8.3.5",
