@@ -1,0 +1,21 @@
+{
+  "name": "@packages/api-client",
+  "private": true,
+  "description": "Typed clients extensions use to call the app's tRPC procedures.",
+  "type": "module",
+  "exports": {
+    "./storefront": "./src/storefront.ts",
+    "./customer-account": "./src/customer-account.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@packages/api-types": "workspace:*",
+    "@trpc/client": "^11.25.2",
+    "@trpc/server": "^11.25.2"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}

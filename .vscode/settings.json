@@ -12,5 +12,8 @@
   "[liquid]": {
     "editor.defaultFormatter": "Shopify.theme-check-vscode"
   },
-  "editor.rulers": [100]
+  "editor.rulers": [
+    100
+  ],
+  "js/ts.tsdk.path": "node_modules/typescript/lib"
 }
