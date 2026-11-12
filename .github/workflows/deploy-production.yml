@@ -71,6 +71,9 @@ jobs:
       - name: Deploy Worker
         run: pnpm run deploy:production
       - name: Deploy Shopify app config and extensions
+        env:
+          # Shopify CLI bakes this into extension bundles. Without it they crash on "process is not defined".
+          APP_URL: https://shopify-react-router-starter.personal-93c.workers.dev
         run: >-
           pnpm exec shopify app deploy --config shopify.app.toml --allow-updates --no-input
           --version "$VERSION"

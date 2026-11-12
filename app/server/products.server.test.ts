@@ -1,6 +1,6 @@
+import { type AdminApiContext as AdminApiContextWithoutRest } from '@shopify/shopify-app-react-router/server';
 import { fromPartial } from '@total-typescript/shoehorn';
 import { GET_PRODUCTS } from 'app/graphql/queries';
-import { type AdminApiContextWithoutRest } from 'app/shopify.server';
 import { describe, expect, it, vi } from 'vitest';
 
 import { getProducts } from './products.server';

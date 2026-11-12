@@ -215,6 +215,60 @@
         "browser": true,
         "node": true
       }
+    },
+    {
+      "files": ["app/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["hono", "hono/*", "@hono/*"],
+                "message": "Hono is only used in app/http. Procedures go in app/api (see docs/api.md)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["app/api/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["hono", "hono/*", "@hono/*", "app/http/*", "app/routes/*"],
+                "message": "app/api holds tRPC procedures only. HTTP and auth live in app/http (see docs/api.md)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["app/http/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    },
+    {
+      "files": ["packages/api-client/**/*.ts", "extensions/**/*.{ts,tsx,js,jsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["app/*", "**/app/**", "**/app"],
+                "message": "Extensions can't import app code. Call procedures through @packages/api-client."
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

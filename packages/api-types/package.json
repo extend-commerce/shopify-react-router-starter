@@ -1,0 +1,12 @@
+{
+  "name": "@packages/api-types",
+  "private": true,
+  "description": "Generated tRPC router types for extensions. Built by `pnpm api:types`; don't edit.",
+  "type": "module",
+  "types": "./dist/app/api/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/app/api/index.d.ts"
+    }
+  }
+}

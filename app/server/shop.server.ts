@@ -1,7 +1,7 @@
+import { type AdminApiContext as AdminApiContextWithoutRest } from '@shopify/shopify-app-react-router/server';
 import { type Database } from 'app/db.server';
 import { sessionTable, shopTable } from 'app/db/schema';
 import { GET_SHOP_SNAPSHOT } from 'app/graphql/queries';
-import { type AdminApiContextWithoutRest } from 'app/shopify.server';
 import { type GetShopSnapshotQuery } from 'app/types/admin.generated';
 import { and, eq, gte, isNotNull, isNull, lt, notExists, sql } from 'drizzle-orm';
 

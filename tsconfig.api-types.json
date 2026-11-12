@@ -1,0 +1,16 @@
+{
+  // Writes declarations for app/api/index.ts, and whatever it imports, to packages/api-types/dist.
+  // Extensions get their router types from there, never from app source. Run `pnpm api:types`.
+  "extends": "./tsconfig.json",
+  "include": [],
+  "files": ["env.d.ts", "app/api/index.ts"],
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "incremental": false,
+    "rootDir": ".",
+    "outDir": "packages/api-types/dist"
+  }
+}

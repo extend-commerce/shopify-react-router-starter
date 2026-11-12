@@ -1,0 +1,20 @@
+{
+  // Extensions bundle this package's source directly, so keep it to browser globals: no Node,
+  // Vite or Worker types, and no imports from app/.
+  "include": ["src"],
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ES2022",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "types": [],
+    "isolatedModules": true,
+    "verbatimModuleSyntax": false,
+    // tRPC's own declarations reference Node types this package doesn't load.
+    "skipLibCheck": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  }
+}

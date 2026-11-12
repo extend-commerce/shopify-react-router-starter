@@ -1,5 +1,6 @@
 packages:
   - "extensions/*"
+  - "packages/*"
 
 # Only install peer dependencies we declare ourselves. With auto-install on, drizzle-orm's
 # optional driver peers (Prisma, pg) get installed even though this app only uses D1.

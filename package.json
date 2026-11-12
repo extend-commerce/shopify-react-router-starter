@@ -4,7 +4,9 @@
   "scripts": {
     "format:check": "oxfmt --check --no-error-on-unmatched-pattern",
     "format": "oxfmt --no-error-on-unmatched-pattern",
-    "typecheck": "tsc -b",
+    "typecheck": "tsc -b && pnpm run api:types && pnpm -r --if-present run typecheck",
+    "api:types": "node scripts/build-api-types.js",
+    "api:types:watch": "node scripts/build-api-types.js --watch",
     "test": "vitest run",
     "test:watch": "vitest",
     "build": "react-router build",
@@ -24,7 +26,7 @@
     "lint": "oxlint",
     "commit": "cz",
     "prepare": "node .husky/install.mjs",
-    "postinstall": "graphql-codegen && react-router typegen && wrangler types",
+    "postinstall": "graphql-codegen && react-router typegen && wrangler types && pnpm run api:types",
     "router-typegen": "react-router typegen"
   },
   "type": "module",
@@ -33,14 +35,17 @@
   },
   "dependencies": {
     "@graphql-codegen/cli": "^7.4.6",
+    "@hono/trpc-server": "^0.4.2",
     "@logtape/logtape": "^2.4.2",
     "@logtape/pretty": "^2.4.2",
     "@react-router/dev": "7.18.2",
     "@react-router/fs-routes": "7.18.2",
     "@shopify/shopify-app-react-router": "^3.0.2",
     "@shopify/shopify-app-session-storage-drizzle": "^6.0.1",
+    "@trpc/server": "^11.25.2",
     "drizzle-orm": "^0.45.4",
     "featurebase-js": "^1.0.3",
+    "hono": "^4.13.14",
     "isbot": "^5.2.2",
     "jsonwebtoken": "^9.0.3",
     "posthog-js": "^1.438.22",
@@ -60,7 +65,7 @@
     "@shopify/admin-api-client": "^2.0.1",
     "@shopify/api-codegen-preset": "^3.0.0",
     "@shopify/app-bridge-types": "^0.7.3",
-    "@shopify/cli": "4.9.3",
+    "@shopify/cli": "^5.0.0",
     "@shopify/polaris-types": "^1.1.0",
     "@shopify/shopify-api": "^15.0.1",
     "@total-typescript/shoehorn": "^0.1.2",
@@ -82,7 +87,8 @@
   },
   "workspaces": {
     "packages": [
-      "extensions/*"
+      "extensions/*",
+      "packages/*"
     ]
   },
   "trustedDependencies": [
@@ -97,5 +103,5 @@
     "minimatch": "9.0.5"
   },
   "author": "hasham.khalid@extendcommerce.com",
-  "packageManager": "pnpm@12.15.0+sha512.b3951d6d6ff4a9f13dc7cf56cd28d2b8eb37dbcc9c68e52e1e1191873ea9f82a017287ab50baadc5ccc494f036c67c0e47eb13608c2fa36f47711b61ea128e61"
+  "packageManager": "pnpm@12.19.0+sha512.87327b6619853205834e4be59ba3a231e303d9f5e435912ede3312b7539b79af890942f6513b05a4690745666888045c09b33fc420c2cd2d3bd95c01ba21dbeb"
 }
